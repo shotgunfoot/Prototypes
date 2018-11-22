@@ -14,7 +14,7 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
+  - FogOfWar
   - 
   - 
   - 
@@ -40,4 +40,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Floor
+    uniqueID: 2825082185
+    locked: 0
+  - name: Walls
+    uniqueID: 3835769197
+    locked: 0
+  - name: Player
+    uniqueID: 3000187125
+    locked: 0
+  - name: LineOfSight
+    uniqueID: 522136521
     locked: 0
