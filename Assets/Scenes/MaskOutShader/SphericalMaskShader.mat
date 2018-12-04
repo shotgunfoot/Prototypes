@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: SphericalMaskShader
+  m_Shader: {fileID: 4800000, guid: d66e963b80ae1d54a88801ca85983e52, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_440B5310:
+        m_Texture: {fileID: 2800000, guid: aaff1f2a565dc8548b8b692e856f5090, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_97F3F515:
+        m_Texture: {fileID: 2800000, guid: d996b19659cf49c4594bb987512711ff, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_7E400575: 3
+    - Vector1_90FD28CE: 0.5
+    - Vector1_A1236F3E: 1
+    - Vector1_A9513D49: 1
+    m_Colors:
+    - Color_47E1C56A: {r: 0, g: 0, b: 0, a: 0}
+    - Color_889A2B4B: {r: 1, g: 1, b: 1, a: 1}
+    - Color_C3C747E9: {r: 1, g: 1, b: 1, a: 0}
+    - Vector3_C1C6C620: {r: 0, g: 0, b: 0, a: 0}
