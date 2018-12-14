@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ded30589be152ba448b26c97b828a578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioClips: {fileID: 0}
   blipPrefab: {fileID: 114927142987140870, guid: 8fb64d827a2d8d54db08b9ac7adfb413,
     type: 2}
   player: {fileID: 0}
