@@ -10,6 +10,7 @@ public class TrackerBlip : MonoBehaviour
     private void Start()
     {
         image = GetComponent<Image>();
+        Destroy(gameObject, .5f);
     }
 
 }

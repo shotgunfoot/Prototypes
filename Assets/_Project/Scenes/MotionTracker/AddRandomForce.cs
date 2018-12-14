@@ -21,7 +21,7 @@ public class AddRandomForce : MonoBehaviour
     {		
         if (time > TimeUntilRandomForce)
         {
-			Vector3 randomDirection = new Vector3(Random.Range(0, 360), Random.Range(0, 360),Random.Range(0, 360));
+			Vector3 randomDirection = new Vector3(Random.Range(-360, 360), Random.Range(-360, 360),Random.Range(-360, 360));
 			rigidbody.AddForce(randomDirection * ForceStrength);
 			time = 0;			
         }		

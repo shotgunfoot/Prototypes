@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa724b5ae967c47439629c651a0fd999, type: 3}
+  m_Name: TrackerSounds
+  m_EditorClassIdentifier: 
+  sounds:
+  - {fileID: 8300000, guid: 99aabcfc57357ed45ab0c5e35ece6658, type: 3}
+  - {fileID: 8300000, guid: 76b3592fbd9f7f1469957b39f45953c6, type: 3}
