@@ -2,40 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+///
+/* If the motion tracker is in world space then the localRotation z axis of the center point for the blips should follow the parent transform's y rotation
+    otherwise its an overlay one and in that case should use the player's y rotaion for the center point's z localRotation
+    If confused, see prototype project for examples.
+*/
+///
+
 public class MotionTracker : MonoBehaviour
 {
-
-    List<GameObject> targets;
-    List<float> distances;
-    List<Vector3> directions;
-    List<TrackerBlip> blips;
-    float WorldUIScale;
+    float canvasScale;
     AudioSource audioSource;
     WaitForSeconds one;
-
-    public AudioClips audioClips;
-
-    public TrackerBlip blipPrefab;
-
-    public Transform player;
-    public Canvas canvas;
-
-    public Transform blip;
-    public Transform center;
+    public AudioClips AudioClips;
+    public TrackerBlip BlipPrefab;
+    public Transform Player;
+    public Canvas Canvas;    
+    public Transform Center;
 
     private void Start()
     {
-        targets = new List<GameObject>();
-        distances = new List<float>();
-        directions = new List<Vector3>();
-        blips = new List<TrackerBlip>();
         audioSource = GetComponent<AudioSource>();
 
         //scale for box collider
         //WorldUIScale = canvas.GetComponent<RectTransform>().rect.width / GetComponent<BoxCollider>().size.x;
 
         //scale for sphere collider
-        WorldUIScale = canvas.GetComponent<RectTransform>().rect.width / (GetComponent<SphereCollider>().radius * 2);
+        canvasScale = Canvas.GetComponent<RectTransform>().rect.width / (GetComponent<SphereCollider>().radius * 2);
         one = new WaitForSeconds(1);
         StartCoroutine(Pulse());
     }
@@ -44,7 +37,7 @@ public class MotionTracker : MonoBehaviour
     {
         while (true)
         {
-            audioSource.PlayOneShot(audioClips.sounds[0]);
+            audioSource.PlayOneShot(AudioClips.sounds[0]);
             yield return one;
         }
     }
@@ -52,13 +45,14 @@ public class MotionTracker : MonoBehaviour
     private void Update()
     {
         //rotate the radar center to match the players facing direction
-        center.localRotation = Quaternion.Euler(0, 0, player.rotation.eulerAngles.y);
+        Center.localRotation = Quaternion.Euler(0, 0, Player.rotation.eulerAngles.y);
     }
 
     private bool WithinAngle(Transform target, float angle)
     {
         Vector3 direction = target.position - transform.position;
-
+        //we want to ignore the y value when checking angle.
+        direction.y = 0;
         if (Vector3.Angle(transform.forward, direction) < angle)
         {
             return true;
@@ -86,15 +80,13 @@ public class MotionTracker : MonoBehaviour
                     Vector2 direction = (thisPos - targetPos);
 
                     //normalise the direction between 0 and 1 then scale it with the UI.
-                    direction = direction.normalized * WorldUIScale;
+                    direction = direction.normalized * canvasScale;
 
                     Vector2 blipPosition = direction * distance;
 
-                    TrackerBlip blip = Instantiate(blipPrefab, center);
+                    TrackerBlip blip = Instantiate(BlipPrefab, Center);
                     blip.transform.localPosition = new Vector3(-blipPosition.x, -blipPosition.y, 0);
-                    audioSource.PlayOneShot(audioClips.sounds[1]);
-
-
+                    audioSource.PlayOneShot(AudioClips.sounds[1]);
                 }
             }
         }

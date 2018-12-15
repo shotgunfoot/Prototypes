@@ -7,7 +7,7 @@ public class AddRandomForce : MonoBehaviour
 
 	private Rigidbody rigidbody;
 	private TimeSince time;
-
+    
     public float TimeUntilRandomForce = 1f;
 	public float ForceStrength = 2f;
 
@@ -23,7 +23,8 @@ public class AddRandomForce : MonoBehaviour
         {
 			Vector3 randomDirection = new Vector3(Random.Range(-360, 360), Random.Range(-360, 360),Random.Range(-360, 360));
 			rigidbody.AddForce(randomDirection * ForceStrength);
-			time = 0;			
+			time = 0;	
+            TimeUntilRandomForce = Random.Range(1f, 4f);		
         }		
     }
 }

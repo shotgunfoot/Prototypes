@@ -9,32 +9,32 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1500320835212580}
+  m_RootGameObject: {fileID: 1082736118837490}
   m_IsPrefabAsset: 1
---- !u!1 &1500320835212580
+--- !u!1 &1082736118837490
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 224765020554213394}
-  - component: {fileID: 222638697764928102}
-  - component: {fileID: 114855222143455238}
-  - component: {fileID: 114927142987140870}
+  - component: {fileID: 224218519557761428}
+  - component: {fileID: 222263317097012636}
+  - component: {fileID: 114307370976155202}
+  - component: {fileID: 114823500613286390}
   m_Layer: 0
-  m_Name: Blip
+  m_Name: Blip Large
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114855222143455238
+--- !u!114 &114307370976155202
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1500320835212580}
+  m_GameObject: {fileID: 1082736118837490}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -56,30 +56,30 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114927142987140870
+--- !u!114 &114823500613286390
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1500320835212580}
+  m_GameObject: {fileID: 1082736118837490}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 542365ef819ec1c4b8d9e6d6289c0194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!222 &222638697764928102
+--- !u!222 &222263317097012636
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1500320835212580}
+  m_GameObject: {fileID: 1082736118837490}
   m_CullTransparentMesh: 0
---- !u!224 &224765020554213394
+--- !u!224 &224218519557761428
 RectTransform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1500320835212580}
+  m_GameObject: {fileID: 1082736118837490}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -90,5 +90,5 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0.000061035156}
-  m_SizeDelta: {x: 10, y: 10}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
