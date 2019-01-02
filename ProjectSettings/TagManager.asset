@@ -7,6 +7,7 @@ TagManager:
   - Physics
   - Hitbox
   - Enemy
+  - Wieldable
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - IgnoreMeCam2
   - EditorIgnore
   - MotionTracker
-  - 
+  - Player
   - 
   - 
   - 

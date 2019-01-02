@@ -10,20 +10,10 @@ public class ScreenShake : MonoBehaviour {
     public float SmoothAmount;
 
     private bool shake;
-    private bool shakeRoutineRunning;
+    private bool shakeRoutineRunning; 
 
-	// Update is called once per frame
-	void Update () {
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            shake = !shake;
-        }
-
-        if (shake)
-        {
-            //do the shake
-
-        }
+    // Update is called once per frame
+    void Update () {
 
         if (Input.GetKeyDown(KeyCode.M))
         {
