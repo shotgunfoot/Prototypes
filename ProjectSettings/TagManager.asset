@@ -8,6 +8,7 @@ TagManager:
   - Hitbox
   - Enemy
   - Wieldable
+  - Interactable
   layers:
   - Default
   - TransparentFX

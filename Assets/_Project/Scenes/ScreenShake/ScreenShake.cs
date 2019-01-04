@@ -2,37 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScreenShake : MonoBehaviour {
+public class ScreenShake : MonoBehaviour
+{
 
     public float ShakeDuration;
-    public float ShakeStrength;    
+    public float ShakeStrength;
     public bool SmoothShake;
     public float SmoothAmount;
 
+    private Camera cam;
     private bool shake;
-    private bool shakeRoutineRunning; 
+    private bool shakeRoutineRunning;
 
-    // Update is called once per frame
-    void Update () {
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            if (!shakeRoutineRunning)
-            {
-                StartCoroutine(ShakeRoutine(ShakeDuration, ShakeStrength));
-            }            
-        }
-	}
-
-    IEnumerator ShakeRoutine(float shakeDuration, float shakeStrength)
+    private void Start()
     {
-        shakeRoutineRunning = true;
-        
+        cam = FindObjectOfType<Camera>();
+    }
+
+    public void StartShakeRoutine()
+    {
+        StartCoroutine(ShakeRoutine(ShakeDuration, ShakeStrength));
+    }
+
+    private IEnumerator ShakeRoutine(float shakeDuration, float shakeStrength)
+    {
+        shakeRoutineRunning = true;        
+
         float shakePerc;
 
         float shakeDurationRemaining = shakeDuration;
 
-        while(shakeDurationRemaining > .1f)
+        while (shakeDurationRemaining > 0)
         {
             Vector3 rotation = Random.insideUnitSphere * shakeStrength;
             rotation.z = 0;
@@ -43,19 +43,17 @@ public class ScreenShake : MonoBehaviour {
 
             if (SmoothShake)
             {
-                transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotation), Time.deltaTime * SmoothAmount);
+                cam.transform.localRotation = Quaternion.Lerp(cam.transform.localRotation, Quaternion.Euler(rotation), Time.deltaTime * SmoothAmount);
             }
             else
             {
-                transform.localRotation = Quaternion.Euler(rotation);
+                cam.transform.localRotation = Quaternion.Euler(rotation);
             }
 
             shakeDurationRemaining -= Time.deltaTime;
 
             yield return null;
-        }
-
-        transform.rotation = Quaternion.identity;
+        }        
 
         shakeRoutineRunning = false;
 

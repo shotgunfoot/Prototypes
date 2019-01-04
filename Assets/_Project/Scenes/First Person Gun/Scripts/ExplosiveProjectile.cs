@@ -1,12 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using EZCameraShake;
 
-public class Projectile : MonoBehaviour
+public class ExplosiveProjectile : MonoBehaviour
 {
     public float rotationSpeed;
     public GameObject Explosion;
     public AudioSource audio;
     public AudioClip clip;
+
+    public float ShakeMagnitude;
+    public float ShakeRoughness;
+    public float ShakeFadeIn;
+    public float ShakeFadeOut;
 
     private bool spawnedExplosive = false;
 
@@ -34,6 +40,7 @@ public class Projectile : MonoBehaviour
             spawnedExplosive = true;
             GameObject explosive = Instantiate(Explosion, transform.position, Quaternion.identity);
             audio.PlayOneShot(clip);
+            CameraShaker.Instance.ShakeOnce(ShakeMagnitude, ShakeRoughness, ShakeFadeIn, ShakeFadeOut);
             Destroy(explosive, 5f);
             Destroy(gameObject, 5f);
         }

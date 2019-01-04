@@ -4812,6 +4812,10 @@ MonoBehaviour:
   Explosion: {fileID: 1000013462590818, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
   audio: {fileID: 0}
   clip: {fileID: 8300000, guid: cbddc0cf26191474fadcf076edeeb4e9, type: 3}
+  ShakeMagnitude: 3
+  ShakeRoughness: 5
+  ShakeFadeIn: 0.1
+  ShakeFadeOut: 0.1
 --- !u!54 &54257008393070776
 Rigidbody:
   m_ObjectHideFlags: 0

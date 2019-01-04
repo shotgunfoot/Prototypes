@@ -6,48 +6,54 @@ using UnityEngine.UI;
 public class Hand : MonoBehaviour
 {
 
-    private GameObject EquippedObject;
+    public GameObject EquippedObject;
+    public GameObject HoverObject;
     public Camera cam;
 
+    public Sprites handSprites;
     public Image handSprite;
 
-    private void Update()
-    {
-        //if mousedown and hand is empty.
-        if (Input.GetMouseButtonDown(0) && EquippedObject == null)
-        {
-            PickUpItem();            
-        }
-        else if (Input.GetMouseButtonDown(0))
-        {
-            UseObjectInHand();
-        }
+    
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            DropItem();
-        }
-
-        ItemHover();
-
-    }
-
-    private void ItemHover()
+    public void ItemHover()
     {
         handSprite.enabled = false;
+        HoverObject = null;
+
+        //if there's an object in the hand just return.
+        if(EquippedObject != null)
+        {
+            return;
+        }
 
         RaycastHit hit;
         if (Physics.Raycast(cam.ViewportPointToRay(new Vector3(.5f, .5f, 0)), out hit, 5f))
         {
             if(hit.collider.tag == "Wieldable")
             {
+                handSprite.sprite = handSprites.GetSpriteWithName("HandPickUpIcon");
                 handSprite.enabled = true;
+                HoverObject = hit.collider.gameObject;
             }
-        }        
+
+            if(hit.collider.tag == "Interactable")
+            {
+                handSprite.sprite = handSprites.GetSpriteWithName("HandPokeIcon");
+                handSprite.enabled = true;
+                HoverObject = hit.collider.gameObject;
+            }            
+        }
     }
 
+    public void UseObjectInHandHover()
+    {
+        if(HoverObject != null)
+        {
+            HoverObject.SendMessage("HoverAction", SendMessageOptions.DontRequireReceiver);
+        }
+    }
 
-    private void UseObjectInHand()
+    public void UseObjectInHand()
     {
         if (EquippedObject != null)
         {
@@ -55,7 +61,7 @@ public class Hand : MonoBehaviour
         }
     }
 
-    private void PickUpItem()
+    public void PickUpItem(Hand hand)
     {
         //fire a ray from the camera outwards a short distance
         RaycastHit hit;
@@ -66,18 +72,18 @@ public class Hand : MonoBehaviour
             {
                 if (item.AttachOffset != null)
                 {
-                    AttachObject(item.gameObject, item.AttachOffset);
+                    AttachObject(hand, item.gameObject, item.AttachOffset);
                 }
             }
         }
 
     }
 
-    private void AttachObject(GameObject objectToAttach, Transform attachOffset = null)
+    public void AttachObject(Hand hand, GameObject objectToAttach, Transform attachOffset = null)
     {
         if (attachOffset != null)
         {
-            objectToAttach.transform.SetParent(gameObject.transform);
+            objectToAttach.transform.SetParent(hand.transform);
             objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
             objectToAttach.GetComponent<Collider>().enabled = false;
             objectToAttach.transform.localPosition = Vector3.zero - attachOffset.localPosition;
@@ -85,7 +91,7 @@ public class Hand : MonoBehaviour
         }
         else
         {
-            objectToAttach.transform.SetParent(gameObject.transform);
+            objectToAttach.transform.SetParent(hand.transform);
             objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
             objectToAttach.GetComponent<Collider>().enabled = false;
             objectToAttach.transform.localPosition = Vector3.zero;
@@ -94,7 +100,7 @@ public class Hand : MonoBehaviour
         EquippedObject = objectToAttach;
     }
 
-    private void DropItem()
+    public void DropItem()
     {
         if (EquippedObject != null)
         {
