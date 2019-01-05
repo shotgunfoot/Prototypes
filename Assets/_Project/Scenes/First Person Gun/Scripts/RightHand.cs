@@ -3,6 +3,7 @@ using System.Collections;
 
 public class RightHand : Hand
 {
+    public string Name = "RightHand";
 
     // Update is called once per frame
     void Update()
@@ -33,6 +34,7 @@ public class RightHand : Hand
             DropItem();
         }
 
-        ItemHover();
+        HandHover();
+        
     }
 }

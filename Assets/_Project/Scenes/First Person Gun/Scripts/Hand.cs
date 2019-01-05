@@ -11,11 +11,9 @@ public class Hand : MonoBehaviour
     public Camera cam;
 
     public Sprites handSprites;
-    public Image handSprite;
+    public Image handSprite;    
 
-    
-
-    public void ItemHover()
+    public void HandHover()
     {
         handSprite.enabled = false;
         HoverObject = null;
@@ -44,6 +42,8 @@ public class Hand : MonoBehaviour
             }            
         }
     }
+
+    
 
     public void UseObjectInHandHover()
     {
@@ -83,11 +83,11 @@ public class Hand : MonoBehaviour
     {
         if (attachOffset != null)
         {
-            objectToAttach.transform.SetParent(hand.transform);
+            objectToAttach.transform.SetParent(hand.transform, true);
             objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
             objectToAttach.GetComponent<Collider>().enabled = false;
             objectToAttach.transform.localPosition = Vector3.zero - attachOffset.localPosition;
-            objectToAttach.transform.localRotation = Quaternion.identity;
+            objectToAttach.transform.localRotation = transform.localRotation * attachOffset.localRotation;                
         }
         else
         {
@@ -98,6 +98,7 @@ public class Hand : MonoBehaviour
             objectToAttach.transform.localRotation = Quaternion.identity;
         }        
         EquippedObject = objectToAttach;
+        EquippedObject.SendMessage("OnPickUp", SendMessageOptions.DontRequireReceiver);
     }
 
     public void DropItem()
