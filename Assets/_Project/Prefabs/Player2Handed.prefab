@@ -275,8 +275,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EquippedObject: {fileID: 0}
+  HoverObject: {fileID: 0}
   cam: {fileID: 2131827420776804155}
+  handSprites: {fileID: 11400000, guid: bc4f7627bf6b1e74b922fd2decfd1762, type: 2}
   handSprite: {fileID: 6706188258850813586}
+  Name: LeftHand
 --- !u!1 &4113770641894189316
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,6 +403,7 @@ GameObject:
   - component: {fileID: 2131827420776804155}
   - component: {fileID: 8431252760716959272}
   - component: {fileID: 2709849078267153822}
+  - component: {fileID: 1471200697}
   m_Layer: 13
   m_Name: Main Camera
   m_TagString: Player
@@ -445,7 +449,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 90
   orthographic: 0
@@ -487,6 +491,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DefaultPosInfluence: {x: 0.15, y: 0.15, z: 0.15}
   DefaultRotInfluence: {x: 1, y: 1, z: 1}
+--- !u!114 &1471200697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4742259192527054361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cf94b3f6345f8c419e58d3222697988, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5008654870604623215
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,8 +912,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EquippedObject: {fileID: 0}
+  HoverObject: {fileID: 0}
   cam: {fileID: 2131827420776804155}
+  handSprites: {fileID: 11400000, guid: bc4f7627bf6b1e74b922fd2decfd1762, type: 2}
   handSprite: {fileID: 1549577303747550216}
+  Name: RightHand
 --- !u!1 &8188011025090014708
 GameObject:
   m_ObjectHideFlags: 0

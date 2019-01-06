@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Keycard : MonoBehaviour
+public class Keycard : WieldableObject
 {
     public Color color;    
     public string accessKey;
@@ -13,22 +13,22 @@ public class Keycard : MonoBehaviour
         GetComponent<MeshRenderer>().materials[1].color = color;
     }
 
-    public void Action()
+    public override void OnPickUpAction()
+    {
+        cam = FindObjectOfType<Camera>();
+    }
+
+    public override void ObjectAction()
     {
         RaycastHit hit;
 
         if (Physics.Raycast(cam.ViewportPointToRay(new Vector3(.5f, .5f, 0)), out hit, 5f))
         {
             InWorldKeyCardButton button = hit.collider.GetComponent<InWorldKeyCardButton>();
-            if(button != null)
+            if (button != null)
             {
-                button.Action(accessKey);
+                button.ButtonAction(accessKey);
             }
         }
-    }
-
-    public void OnPickUp()
-    {
-        cam = FindObjectOfType<Camera>();
     }
 }

@@ -49,7 +49,8 @@ public class Hand : MonoBehaviour
     {
         if(HoverObject != null)
         {
-            HoverObject.SendMessage("HoverAction", SendMessageOptions.DontRequireReceiver);
+            //HoverObject.SendMessage("HoverAction", SendMessageOptions.DontRequireReceiver);
+            HoverObject.GetComponent<IHoverAction>().HoverAction();
         }
     }
 
@@ -57,7 +58,8 @@ public class Hand : MonoBehaviour
     {
         if (EquippedObject != null)
         {
-            EquippedObject.SendMessage("Action", SendMessageOptions.DontRequireReceiver);
+            //EquippedObject.SendMessage("Action", SendMessageOptions.DontRequireReceiver);
+            EquippedObject.GetComponent<IObjectAction>().ObjectAction();
         }
     }
 
@@ -98,7 +100,9 @@ public class Hand : MonoBehaviour
             objectToAttach.transform.localRotation = Quaternion.identity;
         }        
         EquippedObject = objectToAttach;
-        EquippedObject.SendMessage("OnPickUp", SendMessageOptions.DontRequireReceiver);
+
+        //EquippedObject.SendMessage("OnPickUp", SendMessageOptions.DontRequireReceiver);       
+        EquippedObject.GetComponent<IOnPickUpAction>().OnPickUpAction();
     }
 
     public void DropItem()
