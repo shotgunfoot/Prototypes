@@ -16,6 +16,7 @@ public class MouseLook : MonoBehaviour
     public Vector2 smoothing = new Vector2(3, 3);
     public Vector2 targetDirection;
     public Vector2 targetCharacterDirection;
+    public float bodyTurnAngle = 20f;
 
     // Assign this if there's a parent object controlling motion, such as a Character Controller.
     // Yaw rotation will affect this object instead of the camera if set.
@@ -72,8 +73,8 @@ public class MouseLook : MonoBehaviour
 
         // If there's a character body that acts as a parent to the camera
         if (characterBody)
-        {
-            var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, Vector3.up);
+        {                                    
+            var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, Vector3.up);            
             characterBody.transform.localRotation = yRotation * targetCharacterOrientation;
         }
         else
