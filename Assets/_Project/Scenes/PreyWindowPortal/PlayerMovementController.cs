@@ -57,15 +57,7 @@ public class PlayerMovementController : MonoBehaviour
     private bool playerControl = false;
     private int jumpTimer;
 
-    #endregion
-
-    [Space]
-
-    [Header("Climbing Properties")]    
-    
-    public bool foundLedge;
-
-    private bool climbing;
+    #endregion    
 
     void Start()
     {
@@ -74,11 +66,11 @@ public class PlayerMovementController : MonoBehaviour
         speed = walkSpeed;
         rayDistance = controller.height * .5f + controller.radius;
         slideLimit = controller.slopeLimit - .1f;
-        jumpTimer = antiBunnyHopFactor;        
+        jumpTimer = antiBunnyHopFactor;
     }
 
     void FixedUpdate()
-    {        
+    {
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
@@ -142,13 +134,8 @@ public class PlayerMovementController : MonoBehaviour
             if (!Input.GetButton("Jump"))
                 jumpTimer++;
             else if (jumpTimer >= antiBunnyHopFactor)
-            {                
-                moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS
-
-                /// Modified by Sion
-                /// Check here for ledges
-                
-                CheckForLedge();
+            {
+                moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS                
 
                 /// Modified by Sion
                 jumpTimer = 0;
@@ -175,11 +162,10 @@ public class PlayerMovementController : MonoBehaviour
         // Apply gravity
         moveDirection.y -= gravity * Time.deltaTime;
 
-        if (!climbing)
-        {
-            // Move the controller, and set grounded true or false depending on whether we're standing on something
-            grounded = (controller.Move(moveDirection * Time.deltaTime) & CollisionFlags.Below) != 0;
-        }        
+
+        // Move the controller, and set grounded true or false depending on whether we're standing on something
+        grounded = (controller.Move(moveDirection * Time.deltaTime) & CollisionFlags.Below) != 0;
+
     }
 
     void Update()
@@ -201,44 +187,6 @@ public class PlayerMovementController : MonoBehaviour
     void FallingDamageAlert(float fallDistance)
     {
         print("Ouch! Fell " + fallDistance + " units!");
-    }
-
-    public Transform ledgeToGrab;
-
-    /// <summary>
-    /// Checks for a climbable ledge in front and above the player
-    /// </summary>
-    void CheckForLedge()
-    {
-        if (foundLedge)
-        {
-            climbing = true;
-            StartCoroutine(Climb());
-        }
-    }
-
-    IEnumerator Climb()
-    {       
-        Vector3 startPos = transform.position; //start position - where the player is at at the start of the climb.
-        Vector3 endPos; //end position - where the player intends to end up, on top of the ledge.
-        float climbLength = 0.5f;
-        float elapsedTime = 0;
-        endPos = ledgeToGrab.position + new Vector3(0, 1, -.5f);
-        
-        float journeyLength = Vector3.Distance(startPos, endPos);
-        // Work out end position
-        // Position of the ledge being grabbed + offset (not sure how to work this bit out yet)                
-
-        while (elapsedTime < climbLength)
-        {            
-            transform.position = (Vector3.Lerp(startPos, endPos, elapsedTime / climbLength));
-            elapsedTime += Time.deltaTime / climbLength;
-            yield return new WaitForEndOfFrame();
-        }
-
-        //work out end position        
-        climbing = false;
-        yield return null;
     }
 
 }
