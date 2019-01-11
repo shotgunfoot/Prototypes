@@ -8,10 +8,12 @@ public class Hand : MonoBehaviour
 
     public GameObject EquippedObject;
     public GameObject HoverObject;
-    public Camera cam;
+    public Transform HandFixPoint;
+    [SerializeField] private Camera cam;
 
-    public Sprites handSprites;
-    public Image handSprite;    
+    [SerializeField] private Sprites handSprites;
+    [SerializeField] private Image handSprite;
+    [SerializeField] private float handDistance = 1f;
 
     public void HandHover()
     {
@@ -25,7 +27,7 @@ public class Hand : MonoBehaviour
         }
 
         RaycastHit hit;
-        if (Physics.Raycast(cam.ViewportPointToRay(new Vector3(.5f, .5f, 0)), out hit, 5f))
+        if (Physics.Raycast(cam.ViewportPointToRay(new Vector3(.5f, .5f, 0)), out hit, handDistance))
         {
             if(hit.collider.tag == "Wieldable")
             {
@@ -67,7 +69,7 @@ public class Hand : MonoBehaviour
     {
         //fire a ray from the camera outwards a short distance
         RaycastHit hit;
-        if (Physics.Raycast(cam.ViewportPointToRay(new Vector3(.5f, .5f, 0)), out hit, 5f))
+        if (Physics.Raycast(cam.ViewportPointToRay(new Vector3(.5f, .5f, 0)), out hit, handDistance))
         {
             HoldableItem item = hit.collider.GetComponent<HoldableItem>();
             if (item != null)
@@ -85,15 +87,15 @@ public class Hand : MonoBehaviour
     {
         if (attachOffset != null)
         {
-            objectToAttach.transform.SetParent(hand.transform, true);
+            objectToAttach.transform.SetParent(HandFixPoint.transform, true);
             objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
             objectToAttach.GetComponent<Collider>().enabled = false;
-            objectToAttach.transform.localPosition = Vector3.zero - attachOffset.localPosition;
+            objectToAttach.transform.localPosition = Vector3.zero;
             objectToAttach.transform.localRotation = transform.localRotation * attachOffset.localRotation;                
         }
         else
         {
-            objectToAttach.transform.SetParent(hand.transform);
+            objectToAttach.transform.SetParent(HandFixPoint.transform);
             objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
             objectToAttach.GetComponent<Collider>().enabled = false;
             objectToAttach.transform.localPosition = Vector3.zero;

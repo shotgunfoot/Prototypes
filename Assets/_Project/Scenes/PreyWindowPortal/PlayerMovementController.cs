@@ -43,6 +43,8 @@ public class PlayerMovementController : MonoBehaviour
     // Player must be grounded for at least this many physics frames before being able to jump again; set to 0 to allow bunny hopping
     public int antiBunnyHopFactor = 1;
 
+    public bool crouching = false;
+
     private Vector3 moveDirection = Vector3.zero;
     private bool grounded = false;
     private CharacterController controller;
@@ -75,6 +77,11 @@ public class PlayerMovementController : MonoBehaviour
         float inputY = Input.GetAxis("Vertical");
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
         float inputModifyFactor = (inputX != 0.0f && inputY != 0.0f && limitDiagonalSpeed) ? .7071f : 1.0f;
+
+        if (Input.GetButtonDown("Crouch"))
+        {
+            crouching = !crouching;
+        }
 
         if (grounded)
         {
@@ -166,6 +173,15 @@ public class PlayerMovementController : MonoBehaviour
         // Move the controller, and set grounded true or false depending on whether we're standing on something
         grounded = (controller.Move(moveDirection * Time.deltaTime) & CollisionFlags.Below) != 0;
 
+        UpdateAnimator();
+
+    }
+
+    public Animator anim;
+
+    private void UpdateAnimator()
+    {
+        anim.SetBool("Crouch", crouching);        
     }
 
     void Update()
