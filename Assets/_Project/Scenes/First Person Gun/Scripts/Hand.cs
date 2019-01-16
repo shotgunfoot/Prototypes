@@ -90,7 +90,7 @@ public class Hand : MonoBehaviour
             objectToAttach.transform.SetParent(HandFixPoint.transform, true);
             objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
             objectToAttach.GetComponent<Collider>().enabled = false;
-            objectToAttach.transform.localPosition = Vector3.zero;
+            objectToAttach.transform.localPosition = Vector3.zero + attachOffset.localPosition;
             objectToAttach.transform.localRotation = transform.localRotation * attachOffset.localRotation;                
         }
         else

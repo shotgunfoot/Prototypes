@@ -78,6 +78,9 @@ public class PlayerMovementController : MonoBehaviour
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
         float inputModifyFactor = (inputX != 0.0f && inputY != 0.0f && limitDiagonalSpeed) ? .7071f : 1.0f;
 
+        anim.SetFloat("Forward", inputY);
+        anim.SetFloat("Left", inputX);
+
         if (Input.GetButtonDown("Crouch"))
         {
             crouching = !crouching;
@@ -181,7 +184,7 @@ public class PlayerMovementController : MonoBehaviour
 
     private void UpdateAnimator()
     {
-        anim.SetBool("Crouch", crouching);        
+        anim.SetBool("Crouch", crouching);            
     }
 
     void Update()
