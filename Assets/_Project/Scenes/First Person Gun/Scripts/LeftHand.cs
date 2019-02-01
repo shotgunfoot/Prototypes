@@ -2,9 +2,7 @@
 using System.Collections;
 
 public class LeftHand : Hand
-{
-    public string Name = "LeftHand";
-
+{     
     // Update is called once per frame
     void Update()
     {

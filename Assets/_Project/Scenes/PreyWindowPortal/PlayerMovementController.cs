@@ -45,6 +45,8 @@ public class PlayerMovementController : MonoBehaviour
 
     public bool crouching = false;
 
+    public Animator anim;
+
     private Vector3 moveDirection = Vector3.zero;
     private bool grounded = false;
     private CharacterController controller;
@@ -78,8 +80,8 @@ public class PlayerMovementController : MonoBehaviour
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
         float inputModifyFactor = (inputX != 0.0f && inputY != 0.0f && limitDiagonalSpeed) ? .7071f : 1.0f;
 
-        anim.SetFloat("Forward", inputY);
-        anim.SetFloat("Left", inputX);
+        //anim.SetFloat("Forward", inputY);
+        //anim.SetFloat("Left", inputX);
 
         if (Input.GetButtonDown("Crouch"))
         {
@@ -178,9 +180,7 @@ public class PlayerMovementController : MonoBehaviour
 
         UpdateAnimator();
 
-    }
-
-    public Animator anim;
+    }   
 
     private void UpdateAnimator()
     {
