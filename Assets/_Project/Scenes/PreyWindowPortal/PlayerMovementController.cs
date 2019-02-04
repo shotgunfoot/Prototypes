@@ -60,6 +60,7 @@ public class PlayerMovementController : MonoBehaviour
     private Vector3 contactPoint;
     private bool playerControl = false;
     private int jumpTimer;
+    private bool canMove = true;
 
     #endregion    
 
@@ -75,8 +76,13 @@ public class PlayerMovementController : MonoBehaviour
 
     void FixedUpdate()
     {
-        float inputX = Input.GetAxis("Horizontal");
-        float inputY = Input.GetAxis("Vertical");
+        float inputY;
+        float inputX = inputY = 0;
+        if (canMove)
+        {
+            inputX = Input.GetAxis("Horizontal");
+            inputY = Input.GetAxis("Vertical");
+        }
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
         float inputModifyFactor = (inputX != 0.0f && inputY != 0.0f && limitDiagonalSpeed) ? .7071f : 1.0f;
 
@@ -178,13 +184,14 @@ public class PlayerMovementController : MonoBehaviour
         // Move the controller, and set grounded true or false depending on whether we're standing on something
         grounded = (controller.Move(moveDirection * Time.deltaTime) & CollisionFlags.Below) != 0;
 
+
         UpdateAnimator();
 
-    }   
+    }
 
     private void UpdateAnimator()
     {
-        anim.SetBool("Crouch", crouching);            
+        anim.SetBool("Crouch", crouching);
     }
 
     void Update()
@@ -206,6 +213,16 @@ public class PlayerMovementController : MonoBehaviour
     void FallingDamageAlert(float fallDistance)
     {
         print("Ouch! Fell " + fallDistance + " units!");
+    }
+
+    public void DisableMovement()
+    {
+        canMove = false;
+    }
+
+    public void EnableMovement()
+    {
+        canMove = true;
     }
 
 }

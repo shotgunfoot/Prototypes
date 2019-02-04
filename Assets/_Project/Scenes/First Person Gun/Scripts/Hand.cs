@@ -78,13 +78,13 @@ public class Hand : MonoBehaviour
             HoldableItem item = hit.collider.GetComponent<HoldableItem>();
             if (item != null)
             {            
-                AttachObject(hand, item.gameObject, item.AttachOffset);
+                AttachObject(hand, item.gameObject, item.AttachPositionOffset, item.AttachRotationOffset);
             }
         }
 
     }
 
-    public void AttachObject(Hand hand, GameObject objectToAttach, Vector3 attachOffset)
+    public void AttachObject(Hand hand, GameObject objectToAttach, Vector3 attachOffset, Vector3 rotationOffset)
     {
         if (attachOffset != Vector3.zero)
         {
@@ -92,7 +92,7 @@ public class Hand : MonoBehaviour
             objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
             objectToAttach.GetComponent<Collider>().enabled = false;
 
-            Vector3 offset;
+            Vector3 offset;            
             //if right hand we offset everything positively
             //otherwise we negate the x and z values.
             if (hand.Name == "RightHand")
@@ -101,11 +101,10 @@ public class Hand : MonoBehaviour
             }
             else
             {
-                offset = new Vector3(attachOffset.x, attachOffset.y, attachOffset.z);
-            }
-            Debug.Log(hand.name + ", " + offset);            
+                offset = new Vector3(attachOffset.x, attachOffset.y, attachOffset.z);                
+            }                      
             objectToAttach.transform.localPosition = Vector3.zero + offset;
-            objectToAttach.transform.localRotation = Quaternion.identity;
+            objectToAttach.transform.localRotation = Quaternion.identity * Quaternion.Euler(rotationOffset);
         }
         else
         {
