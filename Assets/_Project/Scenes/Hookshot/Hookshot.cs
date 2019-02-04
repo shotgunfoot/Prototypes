@@ -21,9 +21,10 @@ public class Hookshot : WieldableObject
     public Transform Hook;    
     public UnityEvent[] Events;
     public Camera cam;
+    public Transform HookOrigin;
+    public bool DebugMode = false;
 
-    Vector3[] points;
-
+    Vector3[] points;    
     bool hookshotIsFiring;
 
     private void Start()
@@ -65,36 +66,49 @@ public class Hookshot : WieldableObject
         Vector3 targetPosition = ray.origin + ray.direction * MaxDistance;
 
         //move the hook forward by its speed until distance reached        
-        float elapsedTime = 0;
-        elapsedTime = 0;
+        float elapsedTime = 0;        
 
         Vector3 startingPos = Hook.position;
         while(elapsedTime < ProjectileSpeed)
         {
             Hook.position = Vector3.Lerp(startingPos, targetPosition, (elapsedTime / ProjectileSpeed));
             elapsedTime += Time.deltaTime;
+
+            Collider[] colls = Physics.OverlapSphere(Hook.position, 0.39f);
+
+            if(colls.Length > 0)
+            {
+                foreach (Collider coll in colls)
+                {
+                    if(coll.tag == "HookTarget")
+                    {
+                        
+                    }
+                    else
+                    {         
+                        //play a clang sound and end the firing early so it loops backwards
+                        elapsedTime = 100f;
+                        targetPosition = Hook.position;
+                        break;
+                    }
+                }
+            }
+            
             yield return new WaitForEndOfFrame();
         }
 
+        elapsedTime = 0;        
+        while(elapsedTime < ProjectileSpeed)
+        {
+            Hook.position = Vector3.Lerp(targetPosition, HookOrigin.position, (elapsedTime / ProjectileSpeed));
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
 
-        //float t = 0;
-        //while (t < 1)
-        //{
-        //    t += Time.deltaTime / ProjectileSpeed;
-        //    Hook.position = Vector3.Lerp(Hook.position, targetPosition, t);
-        //    yield return null;
-        //}
-
-        //float currentDistance = Vector3.Distance(Hook.position, targetPosition);
-        //for (float i = 0.0f; i < 1.0f; i += (ProjectileSpeed * Time.deltaTime) / currentDistance)
-        //{
-        //    Debug.Log(i);
-        //    Hook.position = Vector3.Lerp(Hook.position, targetPosition, i);
-        //    yield return null;
-        //}
+        Hook.position = HookOrigin.position;
 
         //if reached distance, retract hook
-        Hook.localPosition = new Vector3(1, 0, 0);
+        //Hook.localPosition = new Vector3(1, 0, 0);
         //regardless of result let the player move again
         Events[1].Invoke();
         //Defatten the line renderer
@@ -102,4 +116,14 @@ public class Hookshot : WieldableObject
         hookshotIsFiring = false;
         yield return null;        
     }
+
+    private void OnDrawGizmos()
+    {
+        if (DebugMode)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(Hook.position, 0.39f);
+        }
+    }
+        
 }

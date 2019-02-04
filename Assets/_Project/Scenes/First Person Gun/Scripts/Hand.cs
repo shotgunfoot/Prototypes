@@ -89,9 +89,7 @@ public class Hand : MonoBehaviour
         if (attachOffset != Vector3.zero)
         {
             objectToAttach.transform.SetParent(HandFixPoint.transform, true);
-            objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
-            objectToAttach.GetComponent<Collider>().enabled = false;
-
+            
             Vector3 offset;            
             //if right hand we offset everything positively
             //otherwise we negate the x and z values.
@@ -109,11 +107,18 @@ public class Hand : MonoBehaviour
         else
         {
             objectToAttach.transform.SetParent(HandFixPoint.transform);
-            objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
-            objectToAttach.GetComponent<Collider>().enabled = false;
+            
             objectToAttach.transform.localPosition = Vector3.zero;
             objectToAttach.transform.localRotation = Quaternion.identity;
         }
+
+        //set rigidbody to kinematic and disable all colliders attached is done regardless of attach style.
+        objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
+        foreach (Collider coll in objectToAttach.GetComponent<HoldableItem>().colls)
+        {
+            coll.enabled = false;
+        }
+
         EquippedObject = objectToAttach;
 
         //EquippedObject.SendMessage("OnPickUp", SendMessageOptions.DontRequireReceiver);       
@@ -125,7 +130,10 @@ public class Hand : MonoBehaviour
         if (EquippedObject != null)
         {
             EquippedObject.GetComponent<Rigidbody>().isKinematic = false;
-            EquippedObject.GetComponent<Collider>().enabled = true;
+            foreach (Collider coll in EquippedObject.GetComponent<HoldableItem>().colls)
+            {
+                coll.enabled = true;
+            }
             EquippedObject.transform.SetParent(null);
             EquippedObject = null;
         }
