@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 65914374}
   m_Layer: 0
   m_Name: Hookshot Target
-  m_TagString: Untagged
+  m_TagString: HookTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 166380459}
   m_Layer: 0
   m_Name: Hookshot Target
-  m_TagString: Untagged
+  m_TagString: HookTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 1483728516}
   m_Layer: 0
   m_Name: Hookshot Target (1)
-  m_TagString: Untagged
+  m_TagString: HookTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1097,6 +1097,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerNoModel
       objectReference: {fileID: 0}
+    - target: {fileID: 1583007000, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1508074124, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
+      propertyPath: lockCursor
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1583007004, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
       propertyPath: m_LocalPosition.x
       value: -21.878601
@@ -1167,16 +1175,42 @@ PrefabInstance:
       propertyPath: DebugView
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1508074124, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
-      propertyPath: lockCursor
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1987573350, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
+--- !u!1 &1931260979
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1931260980}
+  m_Layer: 0
+  m_Name: HookPlayerEndPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1931260980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1931260979}
+  m_LocalRotation: {x: -0, y: -0, z: 0.0000000018262654, w: 1}
+  m_LocalPosition: {x: -1.037, y: 0, z: 0}
+  m_LocalScale: {x: 0.75618345, y: 0.75618356, z: 0.7561836}
+  m_Children: []
+  m_Father: {fileID: 2761947552081226306}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2761947552081226305
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1259,6 +1293,16 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 671410111}
+    - target: {fileID: 3602533502608392972, guid: 468e7aa4f0c410446b020a0bb63edb88,
+        type: 3}
+      propertyPath: HookPlayerEndPosition
+      value: 
+      objectReference: {fileID: 1931260980}
+    - target: {fileID: 3602533502608392972, guid: 468e7aa4f0c410446b020a0bb63edb88,
+        type: 3}
+      propertyPath: HookPlayerEnd
+      value: 
+      objectReference: {fileID: 1931260980}
     - target: {fileID: 373974387, guid: 468e7aa4f0c410446b020a0bb63edb88, type: 3}
       propertyPath: m_Positions.Array.data[0].x
       value: -20.6791
@@ -1283,5 +1327,26 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[1].z
       value: -19.57908
       objectReference: {fileID: 0}
+    - target: {fileID: 6711465410782905636, guid: 468e7aa4f0c410446b020a0bb63edb88,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 6711465410782905636, guid: 468e7aa4f0c410446b020a0bb63edb88,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6711465410782905636, guid: 468e7aa4f0c410446b020a0bb63edb88,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 468e7aa4f0c410446b020a0bb63edb88, type: 3}
+--- !u!4 &2761947552081226306 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6711465410782905636, guid: 468e7aa4f0c410446b020a0bb63edb88,
+    type: 3}
+  m_PrefabInstance: {fileID: 2761947552081226305}
+  m_PrefabAsset: {fileID: 0}

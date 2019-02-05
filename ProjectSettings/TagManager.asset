@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Wieldable
   - Interactable
+  - HookTarget
   layers:
   - Default
   - TransparentFX

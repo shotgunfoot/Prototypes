@@ -22,10 +22,13 @@ public class Hookshot : WieldableObject
     public UnityEvent[] Events;
     public Camera cam;
     public Transform HookOrigin;
+    public Transform HookPlayerEnd;
     public bool DebugMode = false;
 
     Vector3[] points;    
     bool hookshotIsFiring;
+    bool moveToHook;
+    Transform player;
 
     private void Start()
     {
@@ -50,7 +53,13 @@ public class Hookshot : WieldableObject
             StartCoroutine(FiringHookshot());           
         }
         
-    }    
+    }
+
+    public override void OnPickUpAction()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        
+    }
 
     private IEnumerator FiringHookshot()
     {
@@ -80,14 +89,19 @@ public class Hookshot : WieldableObject
             {
                 foreach (Collider coll in colls)
                 {
+                    
                     if(coll.tag == "HookTarget")
                     {
-                        
+                        //break out of the check and set the elapsed time something high to break the while loop
+                        elapsedTime = 100f;
+                        moveToHook = true;
+                        break;
                     }
                     else
                     {         
                         //play a clang sound and end the firing early so it loops backwards
                         elapsedTime = 100f;
+                        moveToHook = false;
                         targetPosition = Hook.position;
                         break;
                     }
@@ -97,14 +111,34 @@ public class Hookshot : WieldableObject
             yield return new WaitForEndOfFrame();
         }
 
-        elapsedTime = 0;        
-        while(elapsedTime < ProjectileSpeed)
+        //If the hook hits a collider with the tag HookTarget then "moveToHook" will be true and we move the player towards the hook's player position
+        //which is just in front of where the hook ends up, otherwise we'd put the player exactly where the hook ends, and thats no good. They might end up
+        //stuck inside whatever obstacle we zippin to.
+        if (moveToHook)
         {
-            Hook.position = Vector3.Lerp(targetPosition, HookOrigin.position, (elapsedTime / ProjectileSpeed));
-            elapsedTime += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
+            elapsedTime = 0;
+            Vector3 currentPlayerPosition = player.position;
+            Vector3 targetLocation = HookPlayerEnd.position;
+            while(elapsedTime < ProjectileSpeed)
+            {
+                player.position = Vector3.Lerp(currentPlayerPosition, targetLocation, (elapsedTime / ProjectileSpeed));
+                Hook.position = targetLocation; //we keep telling the hook to stay where it is, otherwise it moves forward as the player moves forward.
+                elapsedTime += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+        }
+        else
+        {
+            elapsedTime = 0;
+            while (elapsedTime < ProjectileSpeed)
+            {
+                Hook.position = Vector3.Lerp(targetPosition, HookOrigin.position, (elapsedTime / ProjectileSpeed));
+                elapsedTime += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
         }
 
+        moveToHook = false;
         Hook.position = HookOrigin.position;
 
         //if reached distance, retract hook
