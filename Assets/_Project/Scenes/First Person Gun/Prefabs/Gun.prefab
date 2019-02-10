@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 21421095}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 9}
+  m_LocalPosition: {x: 0, y: 0, z: 13.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4660519020886304}
@@ -180,7 +180,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1688373475053900}
-  m_LocalRotation: {x: -0, y: -0, z: -0.003534257, w: 0.99999374}
+  m_LocalRotation: {x: 0, y: 0, z: -0.0035342157, w: 0.99999374}
   m_LocalPosition: {x: 1.197, y: 1.082, z: 0.748}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -233,13 +233,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d817e5def08aad246b845fb94e562934, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  properties: {fileID: 0}
+  properties: {fileID: 11400000, guid: 8d5c8764370464643b9c32bb23918f7c, type: 2}
   ProjectilePrefab: {fileID: 1872360292290880, guid: d07f7a5733054854c9600ce1057091ae,
     type: 3}
   ProjectileOrigin: {fileID: 21421096}
   ProjectileForce: 10
   audio: {fileID: 8306092697202665207}
   clip: {fileID: 8300000, guid: 1d4370dda1589cc4f9773f34ca882b9a, type: 3}
+  texts:
+  - {fileID: 5096875282279424194}
+  - {fileID: 8141839995306004390}
 --- !u!114 &114551348597269418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,7 +257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachPositionOffset: {x: 0, y: 0, z: 0}
   AttachRotationOffset: {x: 0, y: 0, z: 0}
-  colls: []
+  Colliders: []
 --- !u!82 &8306092697202665207
 AudioSource:
   m_ObjectHideFlags: 0
@@ -866,7 +869,7 @@ GameObject:
   - component: {fileID: 1116464948707574149}
   - component: {fileID: 8799379428170260072}
   m_Layer: 0
-  m_Name: Canvas
+  m_Name: AmmoCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -880,7 +883,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6210556378778866508}
   m_LocalRotation: {x: -0.0024987457, y: 0.7071027, z: -0.0024996994, w: -0.7071021}
-  m_LocalPosition: {x: 0, y: 0, z: -0.023}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.003, y: 0.003, z: 1}
   m_Children:
   - {fileID: 7335704633232780062}

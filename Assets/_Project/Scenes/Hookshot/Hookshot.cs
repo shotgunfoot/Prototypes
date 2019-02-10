@@ -57,7 +57,7 @@ public class Hookshot : WieldableObject
 
     public override void OnPickUpAction()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = GetComponentInParent<PlayerMovementController>().transform;
         
     }
 

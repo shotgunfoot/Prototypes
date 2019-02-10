@@ -20,8 +20,9 @@ public class PlayerMovementController : MonoBehaviour
     // There must be a button set up in the Input Manager called "Run"
     public bool toggleRun = false;
 
-    public float jumpSpeed = 8.0f;
-    public float gravity = 20.0f;
+    public float jumpSpeed = 8.0f;    
+
+    public Vector3 Gravity;
 
     // Units that player can fall before a falling damage function is run. To disable, type "infinity" in the inspector
     public float fallingDamageThreshold = 10.0f;
@@ -72,13 +73,19 @@ public class PlayerMovementController : MonoBehaviour
         rayDistance = controller.height * .5f + controller.radius;
         slideLimit = controller.slopeLimit - .1f;
         jumpTimer = antiBunnyHopFactor;
+        Gravity = new Vector3(0, 0, 0);        
+    }
+
+    public void AddForce(Vector3 forceDirection)
+    {
+        moveDirection = forceDirection;
     }
 
     void FixedUpdate()
     {
         float inputY;
         float inputX = inputY = 0;
-        if (canMove)
+        if (canMove )
         {
             inputX = Input.GetAxis("Horizontal");
             inputY = Input.GetAxis("Vertical");
@@ -178,7 +185,7 @@ public class PlayerMovementController : MonoBehaviour
         }
 
         // Apply gravity
-        moveDirection.y -= gravity * Time.deltaTime;
+        moveDirection.y -= Gravity.y * Time.deltaTime;
 
 
         // Move the controller, and set grounded true or false depending on whether we're standing on something
@@ -223,6 +230,11 @@ public class PlayerMovementController : MonoBehaviour
     public void EnableMovement()
     {
         canMove = true;
+    }    
+
+    public void SetGravity(Vector3 grav)
+    {
+        Gravity = grav;
     }
 
 }

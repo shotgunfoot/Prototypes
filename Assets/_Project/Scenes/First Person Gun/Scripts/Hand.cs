@@ -114,7 +114,7 @@ public class Hand : MonoBehaviour
 
         //set rigidbody to kinematic and disable all colliders attached is done regardless of attach style.
         objectToAttach.GetComponent<Rigidbody>().isKinematic = true;
-        foreach (Collider coll in objectToAttach.GetComponent<HoldableItem>().colls)
+        foreach (Collider coll in objectToAttach.GetComponent<HoldableItem>().Colliders)
         {
             coll.enabled = false;
         }
@@ -130,7 +130,7 @@ public class Hand : MonoBehaviour
         if (EquippedObject != null)
         {
             EquippedObject.GetComponent<Rigidbody>().isKinematic = false;
-            foreach (Collider coll in EquippedObject.GetComponent<HoldableItem>().colls)
+            foreach (Collider coll in EquippedObject.GetComponent<HoldableItem>().Colliders)
             {
                 coll.enabled = true;
             }

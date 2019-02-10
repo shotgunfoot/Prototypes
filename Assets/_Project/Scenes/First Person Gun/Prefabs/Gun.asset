@@ -15,6 +15,6 @@ MonoBehaviour:
   NumberOfProjectilesPerShot: 1
   ShotsPerSecond: 1
   ProjectilesPerClip: 4
-  TotalProjectilesRemaining: 0
+  TotalProjectilesRemaining: 60
   ReloadTime: 1.5
-  RemainingProjectilesInClip: 0
+  RemainingProjectilesInClip: 4
