@@ -5,19 +5,49 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
+  - enabled: 1
+    path: Assets/_Project/Scenes/Menu/Menu.unity
+    guid: 93b504d11878916419acb06c7e96a93e
+  - enabled: 1
+    path: Assets/_Project/Scenes/Buttons/Buttons.unity
+    guid: 75b3ea52d9a59044081da23222c4c41c
+  - enabled: 1
+    path: Assets/_Project/Scenes/DeusExHealthSystem/DeusExHealthSystem.unity
+    guid: 2d1fc08b94767b84e9e37819288dde59
+  - enabled: 1
+    path: Assets/_Project/Scenes/Doors/Doors.unity
+    guid: 9166ea8296d53564f8b553fc58208af0
+  - enabled: 1
+    path: Assets/_Project/Scenes/Explosive Barrels/ExplosiveBarrels.unity
+    guid: a55eb2c4ffa650d4a91bd85198f8a116
+  - enabled: 1
+    path: Assets/_Project/Scenes/First Person Gun/FirstPersonGun.unity
+    guid: 4790e38161b47ba4ba15171ed8d589dd
+  - enabled: 1
+    path: Assets/_Project/Scenes/TiledFog/TiledFog.unity
+    guid: b3c6c5778ec8acf40aff04a0bfbba62a
+  - enabled: 1
     path: Assets/_Project/Scenes/FogOfWard2D/FogOfWar2D.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/samples/GettingStarted/Tutorial1_Menu.unity
-    guid: 51d1a6943ecb446b4b64a9746b6d7482
+    path: Assets/_Project/Scenes/SlotInventorySystem/SlotInventorySystem.unity
+    guid: f33a6d95e0dd14d4687c4accba482e54
   - enabled: 1
-    path: Assets/samples/GettingStarted/Tutorial1.unity
-    guid: 7cf7a67e62879465c81038608fdda3b0
+    path: Assets/_Project/Scenes/PreyWindowPortal/PreyWindowPortal.unity
+    guid: 49db49bdd2f9d1545acfba8b32e9c960
+  - enabled: 1
+    path: Assets/_Project/Scenes/WallHack/Wallhack.unity
+    guid: 02d76f03a1ebd7a489969585a55cf7e8
+  - enabled: 1
+    path: Assets/_Project/Scenes/ScreenShake/ScreenShake.unity
+    guid: 888027b9a8ea8a34f95389c302156f33
+  - enabled: 1
+    path: Assets/_Project/Scenes/MotionTracker/MotionTracker.unity
+    guid: 6fa9135ba0dd24b4a9f302260ee833cb
+  - enabled: 1
+    path: Assets/_Project/Scenes/Hookshot/Hookshot.unity
+    guid: 2adcc1e69b3eb17438480ea78c6fb5bf
+  - enabled: 1
+    path: Assets/_Project/Scenes/LowGravity/LowGravity.unity
+    guid: 2391f3cbf950ddb4384ce5effb4c1c6d
   m_configObjects: {}
