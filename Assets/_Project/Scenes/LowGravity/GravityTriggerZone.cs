@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class LowGravZone : MonoBehaviour
+public class GravityTriggerZone : MonoBehaviour
 {
     public Vector3 Gravity;
+
+    public bool NormalGravity;
 
     private void OnTriggerEnter(Collider other)
     {

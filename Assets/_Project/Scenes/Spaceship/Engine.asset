@@ -9,12 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68f2f6c9841a42841a06daa1af32d52e, type: 3}
-  m_Name: Gun
+  m_Script: {fileID: 11500000, guid: afde042156902ab4b9521d2a74eb2466, type: 3}
+  m_Name: Engine
   m_EditorClassIdentifier: 
-  NumberOfProjectilesPerShot: 1
-  ShotsPerSecond: 1
-  ProjectilesPerClip: 4
-  TotalProjectilesRemaining: 500
-  ReloadTime: 1.5
-  RemainingProjectilesInClip: 4

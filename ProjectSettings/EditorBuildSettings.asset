@@ -39,9 +39,6 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/WallHack/Wallhack.unity
     guid: 02d76f03a1ebd7a489969585a55cf7e8
   - enabled: 1
-    path: Assets/_Project/Scenes/ScreenShake/ScreenShake.unity
-    guid: 888027b9a8ea8a34f95389c302156f33
-  - enabled: 1
     path: Assets/_Project/Scenes/MotionTracker/MotionTracker.unity
     guid: 6fa9135ba0dd24b4a9f302260ee833cb
   - enabled: 1

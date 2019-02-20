@@ -17,9 +17,9 @@ public class GameConsole : MonoBehaviour
 
     private void Start()
     {
-        anim = GetComponent<Animator>();        
+        anim = GetComponent<Animator>();
         scenes = new string[SceneManager.sceneCountInBuildSettings];
-        for(int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
             scenes[i] = System.IO.Path.GetFileNameWithoutExtension(SceneUtility.GetScenePathByBuildIndex(i));
         }
@@ -34,13 +34,23 @@ public class GameConsole : MonoBehaviour
             if (open)
             {
                 anim.Play("ConsoleClose");
+                InputText.DeactivateInputField();
                 EventSystem.current.SetSelectedGameObject(null);
-                
+                MouseLook mouse = FindObjectOfType<MouseLook>();
+                if (mouse != null)
+                {
+                    mouse.lockCursor = true;
+                }
             }
             else
             {
                 anim.Play("ConsoleOpen");
-                EventSystem.current.SetSelectedGameObject(InputText.gameObject);                
+                InputText.ActivateInputField();
+                MouseLook mouse = FindObjectOfType<MouseLook>();
+                if (mouse != null)
+                {
+                    mouse.lockCursor = false;
+                }
             }
             open = !open;
         }
@@ -49,12 +59,12 @@ public class GameConsole : MonoBehaviour
     public void ValidateString(string s)
     {
         s = s.ToLower();
-        if(s == "help")
+        if (s == "help")
         {
             Help();
         }
-        
-        if(s == "list")
+
+        if (s == "list")
         {
             ListScenes();
         }
@@ -63,17 +73,21 @@ public class GameConsole : MonoBehaviour
         {
             Clear();
         }
-        
+
         string[] words = s.Split(' ');
-        
+
         if (words[0].ToLower() == "load")
         {
-            Load(words[1]);
+            if (words.Length > 1)
+            {
+                Load(words[1]);
+            }
         }
 
-        InputText.text = "";                
+        InputText.text = "";
 
         StartCoroutine(ForceToBottom());
+        InputText.ActivateInputField();
     }
 
     IEnumerator ForceToBottom()
@@ -105,7 +119,7 @@ public class GameConsole : MonoBehaviour
 
     private void Load(string scene)
     {
-        if(SceneManager.GetSceneByName(scene) != null)
+        if (SceneManager.GetSceneByName(scene) != null)
         {
             SceneManager.LoadScene(scene);
         }
@@ -113,6 +127,5 @@ public class GameConsole : MonoBehaviour
         {
             OutputText.text += "The scene '" + scene + "' does not exist\n";
         }
-        EventSystem.current.SetSelectedGameObject(InputText.gameObject);
     }
 }

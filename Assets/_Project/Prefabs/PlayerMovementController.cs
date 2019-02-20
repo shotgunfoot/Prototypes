@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[RequireComponent (typeof(PlayerInput))]
 public class PlayerMovementController : MonoBehaviour
 {
     ///-----///
@@ -62,6 +63,7 @@ public class PlayerMovementController : MonoBehaviour
     private bool playerControl = false;
     private int jumpTimer;
     private bool canMove = true;
+    private PlayerInput pInput;
 
     #endregion    
 
@@ -73,7 +75,7 @@ public class PlayerMovementController : MonoBehaviour
         rayDistance = controller.height * .5f + controller.radius;
         slideLimit = controller.slopeLimit - .1f;
         jumpTimer = antiBunnyHopFactor;
-        Gravity = new Vector3(0, 0, 0);        
+        pInput = GetComponent<PlayerInput>();
     }
 
     public void AddForce(Vector3 forceDirection)
@@ -82,13 +84,13 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     void FixedUpdate()
-    {
+    {        
         float inputY;
         float inputX = inputY = 0;
-        if (canMove )
+        if (canMove)
         {
-            inputX = Input.GetAxis("Horizontal");
-            inputY = Input.GetAxis("Vertical");
+            inputX = pInput.MovementInput.x;
+            inputY = pInput.MovementInput.y;
         }
         // If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
         float inputModifyFactor = (inputX != 0.0f && inputY != 0.0f && limitDiagonalSpeed) ? .7071f : 1.0f;
@@ -96,7 +98,7 @@ public class PlayerMovementController : MonoBehaviour
         //anim.SetFloat("Forward", inputY);
         //anim.SetFloat("Left", inputX);
 
-        if (Input.GetButtonDown("Crouch"))
+        if (pInput.Crouch)
         {
             crouching = !crouching;
         }
@@ -130,7 +132,7 @@ public class PlayerMovementController : MonoBehaviour
 
             // If running isn't on a toggle, then use the appropriate speed depending on whether the run button is down
             if (!toggleRun)
-                speed = Input.GetButton("Run") ? runSpeed : walkSpeed;
+                speed = pInput.Run ? runSpeed : walkSpeed;
 
             // If sliding (and it's allowed), or if we're on an object tagged "Slide", get a vector pointing down the slope we're on
             if ((sliding && slideWhenOverSlopeLimit) || (slideOnTaggedObjects && hit.collider.tag == "Slide"))
@@ -156,7 +158,7 @@ public class PlayerMovementController : MonoBehaviour
             // The antiBunnyHopFactor is there to act as a buffer between being able to jump again. This is because the Jump button is being checked every frame. If this counter was 
             // 0, then the player would jump constantly.
             // /// --- NOTE BY SION --- ///
-            if (!Input.GetButton("Jump"))
+            if (!pInput.Jump)
                 jumpTimer++;
             else if (jumpTimer >= antiBunnyHopFactor)
             {
@@ -205,7 +207,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         // If the run button is set to toggle, then switch between walk/run speed. (We use Update for this...
         // FixedUpdate is a poor place to use GetButtonDown, since it doesn't necessarily run every frame and can miss the event)
-        if (toggleRun && grounded && Input.GetButtonDown("Run"))
+        if (toggleRun && grounded && pInput.Jump)
             speed = (speed == walkSpeed ? runSpeed : walkSpeed);
     }
 
