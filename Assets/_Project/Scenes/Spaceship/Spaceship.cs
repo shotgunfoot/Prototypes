@@ -24,7 +24,7 @@ public class Spaceship : MonoBehaviour
         }
         else
         {
-            velocity *= speedDecay;
+            velocity *= speedDecay * Time.deltaTime;
         }
 
         transform.position += velocity * Time.deltaTime;
