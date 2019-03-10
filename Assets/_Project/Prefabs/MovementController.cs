@@ -1,11 +1,9 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof(PlayerInput))]
-public class PlayerMovementController : MonoBehaviour
+public class MovementController : MonoBehaviour
 {
-    ///-----///
-
     [Header("Movement Properties")]
 
     #region Movement_Properties
@@ -21,7 +19,7 @@ public class PlayerMovementController : MonoBehaviour
     // There must be a button set up in the Input Manager called "Run"
     public bool toggleRun = false;
 
-    public float jumpSpeed = 8.0f;    
+    public float jumpSpeed = 8.0f;
 
     public Vector3 Gravity;
 
@@ -45,14 +43,19 @@ public class PlayerMovementController : MonoBehaviour
     // Player must be grounded for at least this many physics frames before being able to jump again; set to 0 to allow bunny hopping
     public int antiBunnyHopFactor = 1;
 
+    public Transform Feet;
+
     public bool crouching = false;
+
+    Collisions collisions;
 
     public Animator anim;
 
+    public bool DebugView = true;
+
     private Vector3 moveDirection = Vector3.zero;
     private bool grounded = false;
-    private CharacterController controller;
-    private Transform myTransform;
+    private CapsuleCollider capsule;
     private float speed;
     private RaycastHit hit;
     private float fallStartLevel;
@@ -69,13 +72,12 @@ public class PlayerMovementController : MonoBehaviour
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();
-        myTransform = transform;
-        speed = walkSpeed;
-        rayDistance = controller.height * .5f + controller.radius;
-        slideLimit = controller.slopeLimit - .1f;
-        jumpTimer = antiBunnyHopFactor;
         pInput = GetComponent<PlayerInput>();
+        capsule = GetComponent<CapsuleCollider>();
+        speed = walkSpeed;
+        rayDistance = capsule.height * .5f + capsule.radius;
+        slideLimit = 45 - .1f;
+        jumpTimer = antiBunnyHopFactor;
     }
 
     public void AddForce(Vector3 forceDirection)
@@ -84,7 +86,7 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     void FixedUpdate()
-    {        
+    {
         float inputY;
         float inputX = inputY = 0;
         if (canMove)
@@ -108,26 +110,18 @@ public class PlayerMovementController : MonoBehaviour
             bool sliding = false;
             // See if surface immediately below should be slid down. We use this normally rather than a ControllerColliderHit point,
             // because that interferes with step climbing amongst other annoyances
-            if (Physics.Raycast(myTransform.position, -Vector3.up, out hit, rayDistance))
+            if (Physics.Raycast(transform.position, -transform.up, out hit, rayDistance))
             {
-                if (Vector3.Angle(hit.normal, Vector3.up) > slideLimit)
+                if (Vector3.Angle(hit.normal, transform.up) > slideLimit)
                     sliding = true;
             }
             // However, just raycasting straight down from the center can fail when on steep slopes
             // So if the above raycast didn't catch anything, raycast down from the stored ControllerColliderHit point instead
             else
             {
-                Physics.Raycast(contactPoint + Vector3.up, -Vector3.up, out hit);
-                if (Vector3.Angle(hit.normal, Vector3.up) > slideLimit)
+                Physics.Raycast(contactPoint + transform.up, -transform.up, out hit);
+                if (Vector3.Angle(hit.normal, transform.up) > slideLimit)
                     sliding = true;
-            }
-
-            // If we were falling, and we fell a vertical distance greater than the threshold, run a falling damage routine
-            if (falling)
-            {
-                falling = false;
-                if (myTransform.position.y < fallStartLevel - fallingDamageThreshold)
-                    FallingDamageAlert(fallStartLevel - myTransform.position.y);
             }
 
             // If running isn't on a toggle, then use the appropriate speed depending on whether the run button is down
@@ -146,8 +140,8 @@ public class PlayerMovementController : MonoBehaviour
             // Otherwise recalculate moveDirection directly from axes, adding a bit of -y to avoid bumping down inclines
             else
             {
-                moveDirection = new Vector3(inputX * inputModifyFactor, -antiBumpFactor, inputY * inputModifyFactor);
-                moveDirection = myTransform.TransformDirection(moveDirection) * speed;
+                moveDirection = new Vector3(inputX * inputModifyFactor, -antiBumpFactor, inputY * inputModifyFactor); // we should add the antibumpfactor, but it                                 
+                moveDirection = transform.TransformDirection(moveDirection) * speed;
                 playerControl = true;
             }
 
@@ -162,40 +156,80 @@ public class PlayerMovementController : MonoBehaviour
                 jumpTimer++;
             else if (jumpTimer >= antiBunnyHopFactor)
             {
-                moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS                
+                moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS      
+                //THIS NEEDS CHANGING, jump upwards should be based on wherever UP is for the players current orientation.
 
                 /// Modified by Sion
                 jumpTimer = 0;
             }
         }
+        //else
+        //{
+        //    // If we stepped over a cliff or something, set the height at which we started falling
+        //    if (!falling)
+        //    {
+        //        falling = true;
+        //        fallStartLevel = transform.position.y;
+        //    }
+
+        //    // If air control is allowed, check movement but don't touch the y component
+        //    if (airControl && playerControl)
+        //    {
+        //        moveDirection.x = inputX * speed * inputModifyFactor;
+        //        moveDirection.z = inputY * speed * inputModifyFactor;
+        //        moveDirection = transform.TransformDirection(moveDirection);
+        //    }
+        //}
+        
+        // Move the controller, and set grounded true or false depending on whether we're standing on something        
+        grounded = collisions.Below;
+
+        Move(moveDirection * Time.deltaTime);
+        moveDirection = Vector3.zero;
+        UpdateAnimator();
+        UpdateCollisions();        
+    }
+
+
+    public void UpdateCollisions()
+    {
+        collisions.Below = Physics.SphereCast(transform.position, 0.2f, -transform.up, out collisions.BelowHit, 1f);
+        Debug.Log(collisions.Below);
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        if (DebugView)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position + -transform.up * 1f, .2f);
+        }
+    }
+
+    public struct Collisions
+    {
+        public RaycastHit BelowHit;
+        public bool Below;
+    }
+
+    private void Move(Vector3 moveDirection)
+    {                      
+
+        if (collisions.Below)
+        {
+            //dont add gravity because the player is now on the ground.
+            Quaternion rotCur = Quaternion.FromToRotation(transform.up, collisions.BelowHit.normal) * transform.rotation;
+            transform.rotation = rotCur;
+        }
         else
         {
-            // If we stepped over a cliff or something, set the height at which we started falling
-            if (!falling)
-            {
-                falling = true;
-                fallStartLevel = myTransform.position.y;
-            }
-
-            // If air control is allowed, check movement but don't touch the y component
-            if (airControl && playerControl)
-            {
-                moveDirection.x = inputX * speed * inputModifyFactor;
-                moveDirection.z = inputY * speed * inputModifyFactor;
-                moveDirection = myTransform.TransformDirection(moveDirection);
-            }
+            moveDirection -= Gravity * Time.deltaTime;
         }
-
-        // Apply gravity
-        moveDirection.y -= Gravity.y * Time.deltaTime;
-
-        // Move the controller, and set grounded true or false depending on whether we're standing on something
-        grounded = (controller.Move(moveDirection * Time.deltaTime) & CollisionFlags.Below) != 0;
-
-
-        UpdateAnimator();
-
+        Debug.Log(Gravity);
+        transform.position += moveDirection;
     }
+
 
     private void UpdateAnimator()
     {
@@ -216,13 +250,6 @@ public class PlayerMovementController : MonoBehaviour
         contactPoint = hit.point;
     }
 
-    // If falling damage occured, this is the place to do something about it. You can make the player
-    // have hitpoints and remove some of them based on the distance fallen, add sound effects, etc.
-    void FallingDamageAlert(float fallDistance)
-    {
-        print("Ouch! Fell " + fallDistance + " units!");
-    }
-
     public void DisableMovement()
     {
         canMove = false;
@@ -231,12 +258,15 @@ public class PlayerMovementController : MonoBehaviour
     public void EnableMovement()
     {
         canMove = true;
-    }    
+    }
 
     public void SetGravity(Vector3 grav)
     {
         Gravity = grav;
-    }   
+    }
 
+    public bool Grounded()
+    {
+        return grounded;
+    }
 }
-

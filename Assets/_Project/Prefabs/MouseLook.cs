@@ -7,31 +7,34 @@ using UnityEngine.Networking;
 public class MouseLook : MonoBehaviour
 {
 
-    Vector2 _mouseAbsolute;
-    Vector2 _smoothMouse;    
+    Vector2 mouseAbsolute;
+    Vector2 smoothMouse;
     Vector2 storedSensitivity;
 
-    public Vector2 clampInDegrees = new Vector2(360, 180);
+    public Vector2 ClampInDegrees = new Vector2(360, 180);
     public bool lockCursor;
-    public Vector2 sensitivity = new Vector2(2, 2);
-    public Vector2 smoothing = new Vector2(3, 3);
-    public Vector2 targetDirection;
-    public Vector2 targetCharacterDirection;
+    public Vector2 Sensitivity = new Vector2(2, 2);
+    public Vector2 Smoothing = new Vector2(3, 3);
+    public Vector2 TargetDirection;
+    public Vector2 TargetCharacterDirection;
 
     // Assign this if there's a parent object controlling motion, such as a Character Controller.
     // Yaw rotation will affect this object instead of the camera if set.
-    public GameObject characterBody;
+    public GameObject CharacterBody;
+    public MovementController MoveController;
 
     void Start()
     {
         // Set target direction to the camera's initial orientation.
-        targetDirection = transform.localRotation.eulerAngles;
+        TargetDirection = transform.localRotation.eulerAngles;
 
         // Set target direction for the character body to its inital state.
-        if (characterBody)
-            targetCharacterDirection = characterBody.transform.localRotation.eulerAngles;
+        if (CharacterBody)
+            TargetCharacterDirection = CharacterBody.transform.localRotation.eulerAngles;
 
-        storedSensitivity = sensitivity;
+        storedSensitivity = Sensitivity;
+
+        MoveController = GetComponentInParent<MovementController>();
     }
 
     void Update()
@@ -52,41 +55,73 @@ public class MouseLook : MonoBehaviour
             Cursor.visible = true;
         }
         // Allow the script to clamp based on a desired target value.
-        var targetOrientation = Quaternion.Euler(targetDirection);
-        var targetCharacterOrientation = Quaternion.Euler(targetCharacterDirection);
+        Quaternion targetOrientation = Quaternion.Euler(TargetDirection);
+        Quaternion targetCharacterOrientation = Quaternion.Euler(TargetCharacterDirection);
 
         // Get raw mouse input for a cleaner reading on more sensitive mice.
-        var mouseDelta = new Vector2(Input.GetAxisRaw("MouseHorizontal"), Input.GetAxisRaw("MouseVertical"));
+        Vector2 mouseDelta = new Vector2(Input.GetAxisRaw("MouseHorizontal"), Input.GetAxisRaw("MouseVertical"));
 
         // Scale input against the sensitivity setting and multiply that against the smoothing value.
-        mouseDelta = Vector2.Scale(mouseDelta, new Vector2(sensitivity.x * smoothing.x, sensitivity.y * smoothing.y));
+        mouseDelta = Vector2.Scale(mouseDelta, new Vector2(Sensitivity.x * Smoothing.x, Sensitivity.y * Smoothing.y));
 
         // Interpolate mouse movement over time to apply smoothing delta.
-        _smoothMouse.x = Mathf.Lerp(_smoothMouse.x, mouseDelta.x, 1f / smoothing.x);
-        _smoothMouse.y = Mathf.Lerp(_smoothMouse.y, mouseDelta.y, 1f / smoothing.y);
+        smoothMouse.x = Mathf.Lerp(smoothMouse.x, mouseDelta.x, 1f / Smoothing.x);
+        smoothMouse.y = Mathf.Lerp(smoothMouse.y, mouseDelta.y, 1f / Smoothing.y);
+
+
 
         // Find the absolute mouse movement value from point zero.
-        _mouseAbsolute += _smoothMouse;
+        mouseAbsolute += smoothMouse;
 
         // Clamp and apply the local x value first, so as not to be affected by world transforms.
-        if (clampInDegrees.x < 360)
-            _mouseAbsolute.x = Mathf.Clamp(_mouseAbsolute.x, -clampInDegrees.x * 0.5f, clampInDegrees.x * 0.5f);
+        if (ClampInDegrees.x < 360)
+            mouseAbsolute.x = Mathf.Clamp(mouseAbsolute.x, -ClampInDegrees.x * 0.5f, ClampInDegrees.x * 0.5f);
 
         // Then clamp and apply the global y value.
-        if (clampInDegrees.y < 360)
-            _mouseAbsolute.y = Mathf.Clamp(_mouseAbsolute.y, -clampInDegrees.y * 0.5f, clampInDegrees.y * 0.5f);
+        if (ClampInDegrees.y < 360)
+            mouseAbsolute.y = Mathf.Clamp(mouseAbsolute.y, -ClampInDegrees.y * 0.5f, ClampInDegrees.y * 0.5f);
 
-        transform.localRotation = Quaternion.AngleAxis(-_mouseAbsolute.y, targetOrientation * Vector3.right) * targetOrientation;
 
         // If there's a character body that acts as a parent to the camera
-        if (characterBody)
-        {
-            var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, Vector3.up);
-            characterBody.transform.localRotation = yRotation * targetCharacterOrientation;
+        if (CharacterBody)
+        {            
+
+            if (!MoveController.Grounded())
+            {
+
+                //CharacterBody.transform.localRotation = Quaternion.Euler(mouseAbsolute.y, mouseAbsolute.x, 0);
+                CharacterBody.transform.RotateAround(CharacterBody.transform.position, transform.transform.up, smoothMouse.x);
+                CharacterBody.transform.RotateAround(CharacterBody.transform.position, transform.transform.right, smoothMouse.y);                
+            }
+            else
+            {                
+                transform.RotateAround(transform.position, transform.right, smoothMouse.y);
+                CharacterBody.transform.RotateAround(CharacterBody.transform.position, transform.transform.up, smoothMouse.x);
+
+
+                //if the player is grounded then rotate the body left and right only.
+                //Quaternion yRotation = Quaternion.identity;
+                //yRotation = Quaternion.AngleAxis(mouseAbsolute.x, CharacterBody.transform.up);
+                //CharacterBody.transform.localRotation = yRotation * targetCharacterOrientation;
+            }
+            
+            //---------------------
+            /**
+             * This code only supports standing at a 90 degree angle, great when on the ground, terrible for when floating around
+             * It works by rotating the character body left and right on a 90 degree angle.
+             * */
+            //Quaternion yRotation = Quaternion.identity;            
+
+            //yRotation = Quaternion.AngleAxis(mouseAbsolute.x, Vector3.up);            
+
+            //CharacterBody.transform.localRotation = yRotation * targetCharacterOrientation;
+
+            //---------------------
+
         }
         else
         {
-            var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, transform.InverseTransformDirection(Vector3.up));
+            Quaternion yRotation = Quaternion.AngleAxis(mouseAbsolute.x, transform.InverseTransformDirection(Vector3.up));
             transform.localRotation *= yRotation;
         }
 
@@ -94,11 +129,11 @@ public class MouseLook : MonoBehaviour
 
     public void EnableMouseMovement()
     {
-        sensitivity = storedSensitivity;   
+        Sensitivity = storedSensitivity;
     }
 
     public void DisableMouseMovement()
     {
-        sensitivity = Vector2.zero;
+        Sensitivity = Vector2.zero;
     }
 }
