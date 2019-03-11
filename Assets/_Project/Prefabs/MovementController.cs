@@ -43,16 +43,16 @@ public class MovementController : MonoBehaviour
     // Player must be grounded for at least this many physics frames before being able to jump again; set to 0 to allow bunny hopping
     public int antiBunnyHopFactor = 1;
 
-    public Transform Feet;
-
     public bool crouching = false;
+
+    public Rigidbody rb;
 
     Collisions collisions;
 
     public Animator anim;
 
     public bool DebugView = true;
-
+    
     private Vector3 moveDirection = Vector3.zero;
     private bool grounded = false;
     private CapsuleCollider capsule;
@@ -78,6 +78,7 @@ public class MovementController : MonoBehaviour
         rayDistance = capsule.height * .5f + capsule.radius;
         slideLimit = 45 - .1f;
         jumpTimer = antiBunnyHopFactor;
+        rb = GetComponent<Rigidbody>();
     }
 
     public void AddForce(Vector3 forceDirection)
@@ -156,8 +157,10 @@ public class MovementController : MonoBehaviour
                 jumpTimer++;
             else if (jumpTimer >= antiBunnyHopFactor)
             {
-                moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS      
-                //THIS NEEDS CHANGING, jump upwards should be based on wherever UP is for the players current orientation.
+                //moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS      
+                //THIS NEEDS CHANGING, jump upwards should be based on wherever UP is for the players current orientation.                
+                //rigidbody version
+                rb.AddForce(transform.up * Mathf.Sqrt(jumpSpeed * -2f * Gravity.y), ForceMode.VelocityChange);
 
                 /// Modified by Sion
                 jumpTimer = 0;
@@ -180,21 +183,20 @@ public class MovementController : MonoBehaviour
         //        moveDirection = transform.TransformDirection(moveDirection);
         //    }
         //}
-        
+
         // Move the controller, and set grounded true or false depending on whether we're standing on something        
         grounded = collisions.Below;
 
-        Move(moveDirection * Time.deltaTime);
-        moveDirection = Vector3.zero;
+        Move(moveDirection);        
+
         UpdateAnimator();
-        UpdateCollisions();        
+        UpdateCollisions();
     }
 
 
     public void UpdateCollisions()
     {
         collisions.Below = Physics.SphereCast(transform.position, 0.2f, -transform.up, out collisions.BelowHit, 1f);
-        Debug.Log(collisions.Below);
     }
 
 
@@ -214,20 +216,20 @@ public class MovementController : MonoBehaviour
     }
 
     private void Move(Vector3 moveDirection)
-    {                      
+    {
 
         if (collisions.Below)
         {
             //dont add gravity because the player is now on the ground.
-            Quaternion rotCur = Quaternion.FromToRotation(transform.up, collisions.BelowHit.normal) * transform.rotation;
+            Quaternion rotCur = Quaternion.FromToRotation(transform.up, collisions.BelowHit.normal) * transform.rotation;          
             transform.rotation = rotCur;
         }
         else
         {
-            moveDirection -= Gravity * Time.deltaTime;
+            rb.AddForce(Gravity);
         }
-        Debug.Log(Gravity);
-        transform.position += moveDirection;
+        rb.MovePosition(rb.position + moveDirection * Time.deltaTime);
+        //transform.position += moveDirection;
     }
 
 

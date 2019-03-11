@@ -59,7 +59,12 @@ public class MouseLook : MonoBehaviour
         Quaternion targetCharacterOrientation = Quaternion.Euler(TargetCharacterDirection);
 
         // Get raw mouse input for a cleaner reading on more sensitive mice.
-        Vector2 mouseDelta = new Vector2(Input.GetAxisRaw("MouseHorizontal"), Input.GetAxisRaw("MouseVertical"));
+        Vector2 mouseDelta = new Vector2(Input.GetAxisRaw("MouseHorizontal"), Input.GetAxisRaw("MouseVertical"));        
+
+        //if (Mathf.Abs(mouseAbsolute.y) > 90)
+        //{
+        //    Sensitivity.x = -Sensitivity.x;
+        //}
 
         // Scale input against the sensitivity setting and multiply that against the smoothing value.
         mouseDelta = Vector2.Scale(mouseDelta, new Vector2(Sensitivity.x * Smoothing.x, Sensitivity.y * Smoothing.y));
@@ -67,8 +72,7 @@ public class MouseLook : MonoBehaviour
         // Interpolate mouse movement over time to apply smoothing delta.
         smoothMouse.x = Mathf.Lerp(smoothMouse.x, mouseDelta.x, 1f / Smoothing.x);
         smoothMouse.y = Mathf.Lerp(smoothMouse.y, mouseDelta.y, 1f / Smoothing.y);
-
-
+                
 
         // Find the absolute mouse movement value from point zero.
         mouseAbsolute += smoothMouse;
@@ -84,27 +88,26 @@ public class MouseLook : MonoBehaviour
 
         // If there's a character body that acts as a parent to the camera
         if (CharacterBody)
-        {            
+        {
 
             if (!MoveController.Grounded())
-            {
-
+            {                
                 //CharacterBody.transform.localRotation = Quaternion.Euler(mouseAbsolute.y, mouseAbsolute.x, 0);
-                CharacterBody.transform.RotateAround(CharacterBody.transform.position, transform.transform.up, smoothMouse.x);
-                CharacterBody.transform.RotateAround(CharacterBody.transform.position, transform.transform.right, smoothMouse.y);                
+                CharacterBody.transform.RotateAround(CharacterBody.transform.position, CharacterBody.transform.up, smoothMouse.x);
+                CharacterBody.transform.RotateAround(CharacterBody.transform.position, CharacterBody.transform.right, smoothMouse.y);                
             }
             else
-            {                
-                transform.RotateAround(transform.position, transform.right, smoothMouse.y);
-                CharacterBody.transform.RotateAround(CharacterBody.transform.position, transform.transform.up, smoothMouse.x);
-
+            {
+                //transform.RotateAround(transform.position, transform.right, smoothMouse.y); //rotate camera up/down
+                transform.localRotation = Quaternion.Euler(mouseAbsolute.y, 0, 0);
+                CharacterBody.transform.RotateAround(CharacterBody.transform.position, CharacterBody.transform.up, smoothMouse.x); //rotate body left right. 
 
                 //if the player is grounded then rotate the body left and right only.
                 //Quaternion yRotation = Quaternion.identity;
                 //yRotation = Quaternion.AngleAxis(mouseAbsolute.x, CharacterBody.transform.up);
                 //CharacterBody.transform.localRotation = yRotation * targetCharacterOrientation;
             }
-            
+
             //---------------------
             /**
              * This code only supports standing at a 90 degree angle, great when on the ground, terrible for when floating around

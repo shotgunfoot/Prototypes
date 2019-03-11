@@ -4768,7 +4768,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!4 &1071228153968870219 stripped
 Transform:
@@ -4887,7 +4887,7 @@ PrefabInstance:
     - target: {fileID: 562655096008162514, guid: 40f0327dee397bb48b3fcfbf23ef4ec8,
         type: 3}
       propertyPath: Gravity.y
-      value: 0
+      value: -9.81
       objectReference: {fileID: 0}
     - target: {fileID: 562655096008162514, guid: 40f0327dee397bb48b3fcfbf23ef4ec8,
         type: 3}
@@ -4899,6 +4899,11 @@ PrefabInstance:
       propertyPath: Feet
       value: 
       objectReference: {fileID: 173700942}
+    - target: {fileID: 562655096008162514, guid: 40f0327dee397bb48b3fcfbf23ef4ec8,
+        type: 3}
+      propertyPath: slideWhenOverSlopeLimit
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5156783790034813291, guid: 40f0327dee397bb48b3fcfbf23ef4ec8,
         type: 3}
       propertyPath: CharacterBody
