@@ -67,6 +67,7 @@ public class MovementController : MonoBehaviour
     private int jumpTimer;
     private bool canMove = true;
     private PlayerInput pInput;
+    private bool jumping;
 
     #endregion    
 
@@ -155,8 +156,9 @@ public class MovementController : MonoBehaviour
             // /// --- NOTE BY SION --- ///
             if (!pInput.Jump)
                 jumpTimer++;
-            else if (jumpTimer >= antiBunnyHopFactor)
+            else if (jumpTimer >= antiBunnyHopFactor && !jumping)
             {
+                jumping = true;
                 //moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS      
                 //THIS NEEDS CHANGING, jump upwards should be based on wherever UP is for the players current orientation.                
                 //rigidbody version
@@ -164,6 +166,7 @@ public class MovementController : MonoBehaviour
 
                 /// Modified by Sion
                 jumpTimer = 0;
+                StartCoroutine(Jumping());                
             }
         }
         //else
@@ -194,6 +197,12 @@ public class MovementController : MonoBehaviour
     }
 
 
+    public IEnumerator Jumping()
+    {
+        yield return new WaitForSeconds(0.5f);
+        jumping = false;
+    }
+
     public void UpdateCollisions()
     {
         collisions.Below = Physics.SphereCast(transform.position, 0.2f, -transform.up, out collisions.BelowHit, 1f);
@@ -223,12 +232,18 @@ public class MovementController : MonoBehaviour
             //dont add gravity because the player is now on the ground.
             Quaternion rotCur = Quaternion.FromToRotation(transform.up, collisions.BelowHit.normal) * transform.rotation;          
             transform.rotation = rotCur;
+            if (!jumping)
+            {
+                rb.velocity = Vector3.zero;
+            }            
         }
         else
         {
             rb.AddForce(Gravity);
         }
-        rb.MovePosition(rb.position + moveDirection * Time.deltaTime);
+
+        transform.position += moveDirection * Time.deltaTime;
+        //rb.MovePosition(rb.position + moveDirection * Time.deltaTime);
         //transform.position += moveDirection;
     }
 
