@@ -23,20 +23,6 @@ public class MovementController : MonoBehaviour
 
     public Vector3 Gravity;
 
-    // Units that player can fall before a falling damage function is run. To disable, type "infinity" in the inspector
-    public float fallingDamageThreshold = 10.0f;
-
-    // If the player ends up on a slope which is at least the Slope Limit as set on the character controller, then he will slide down
-    public bool slideWhenOverSlopeLimit = false;
-
-    // If checked and the player is on an object tagged "Slide", he will slide down it regardless of the slope limit
-    public bool slideOnTaggedObjects = false;
-
-    public float slideSpeed = 12.0f;
-
-    // If checked, then the player can change direction while in the air
-    public bool airControl = false;
-
     // Small amounts of this results in bumping when walking down slopes, but large amounts results in falling too fast
     public float antiBumpFactor = .75f;
 
@@ -52,18 +38,12 @@ public class MovementController : MonoBehaviour
     public Animator anim;
 
     public bool DebugView = true;
-    
+
     private Vector3 moveDirection = Vector3.zero;
     private bool grounded = false;
     private CapsuleCollider capsule;
-    private float speed;
-    private RaycastHit hit;
-    private float fallStartLevel;
-    private bool falling;
-    private float slideLimit;
-    private float rayDistance;
-    private Vector3 contactPoint;
-    private bool playerControl = false;
+    private float speed;    
+    private Vector3 contactPoint;    
     private int jumpTimer;
     private bool canMove = true;
     private PlayerInput pInput;
@@ -75,17 +55,12 @@ public class MovementController : MonoBehaviour
     {
         pInput = GetComponent<PlayerInput>();
         capsule = GetComponent<CapsuleCollider>();
-        speed = walkSpeed;
-        rayDistance = capsule.height * .5f + capsule.radius;
-        slideLimit = 45 - .1f;
+        speed = walkSpeed;        
         jumpTimer = antiBunnyHopFactor;
         rb = GetComponent<Rigidbody>();
     }
 
-    public void AddForce(Vector3 forceDirection)
-    {
-        moveDirection = forceDirection;
-    }
+    #region FIXEDUPDATE
 
     void FixedUpdate()
     {
@@ -108,44 +83,14 @@ public class MovementController : MonoBehaviour
         }
 
         if (grounded)
-        {
-            bool sliding = false;
-            // See if surface immediately below should be slid down. We use this normally rather than a ControllerColliderHit point,
-            // because that interferes with step climbing amongst other annoyances
-            if (Physics.Raycast(transform.position, -transform.up, out hit, rayDistance))
-            {
-                if (Vector3.Angle(hit.normal, transform.up) > slideLimit)
-                    sliding = true;
-            }
-            // However, just raycasting straight down from the center can fail when on steep slopes
-            // So if the above raycast didn't catch anything, raycast down from the stored ControllerColliderHit point instead
-            else
-            {
-                Physics.Raycast(contactPoint + transform.up, -transform.up, out hit);
-                if (Vector3.Angle(hit.normal, transform.up) > slideLimit)
-                    sliding = true;
-            }
+        {        
+
+            moveDirection = new Vector3(inputX * inputModifyFactor * speed, -antiBumpFactor, inputY * inputModifyFactor * speed);
+            moveDirection = transform.TransformDirection(moveDirection);            
 
             // If running isn't on a toggle, then use the appropriate speed depending on whether the run button is down
             if (!toggleRun)
                 speed = pInput.Run ? runSpeed : walkSpeed;
-
-            // If sliding (and it's allowed), or if we're on an object tagged "Slide", get a vector pointing down the slope we're on
-            if ((sliding && slideWhenOverSlopeLimit) || (slideOnTaggedObjects && hit.collider.tag == "Slide"))
-            {
-                Vector3 hitNormal = hit.normal;
-                moveDirection = new Vector3(hitNormal.x, -hitNormal.y, hitNormal.z);
-                Vector3.OrthoNormalize(ref hitNormal, ref moveDirection);
-                moveDirection *= slideSpeed;
-                playerControl = false;
-            }
-            // Otherwise recalculate moveDirection directly from axes, adding a bit of -y to avoid bumping down inclines
-            else
-            {
-                moveDirection = new Vector3(inputX * inputModifyFactor, -antiBumpFactor, inputY * inputModifyFactor); // we should add the antibumpfactor, but it                                 
-                moveDirection = transform.TransformDirection(moveDirection) * speed;
-                playerControl = true;
-            }
 
             // Jump! But only if the jump button has been released and player has been grounded for a given number of frames
             // /// --- NOTE BY SION --- ///
@@ -159,6 +104,7 @@ public class MovementController : MonoBehaviour
             else if (jumpTimer >= antiBunnyHopFactor && !jumping)
             {
                 jumping = true;
+                collisions.Below = false;
                 //moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS      
                 //THIS NEEDS CHANGING, jump upwards should be based on wherever UP is for the players current orientation.                
                 //rigidbody version
@@ -166,36 +112,27 @@ public class MovementController : MonoBehaviour
 
                 /// Modified by Sion
                 jumpTimer = 0;
-                StartCoroutine(Jumping());                
+                StartCoroutine(Jumping());
             }
         }
-        //else
-        //{
-        //    // If we stepped over a cliff or something, set the height at which we started falling
-        //    if (!falling)
-        //    {
-        //        falling = true;
-        //        fallStartLevel = transform.position.y;
-        //    }
-
-        //    // If air control is allowed, check movement but don't touch the y component
-        //    if (airControl && playerControl)
-        //    {
-        //        moveDirection.x = inputX * speed * inputModifyFactor;
-        //        moveDirection.z = inputY * speed * inputModifyFactor;
-        //        moveDirection = transform.TransformDirection(moveDirection);
-        //    }
-        //}
 
         // Move the controller, and set grounded true or false depending on whether we're standing on something        
         grounded = collisions.Below;
 
+        CollisionCheck();
+
         Move(moveDirection);        
 
         UpdateAnimator();
-        UpdateCollisions();
     }
 
+    #endregion
+
+    public void CollisionCheck()
+    {
+        //fire a sphere collider at players feet, if hitting floor store in collisions.below
+        collisions.Below = Physics.SphereCast(transform.position, .2f, -transform.up, out collisions.BelowHit, 1f);
+    }
 
     public IEnumerator Jumping()
     {
@@ -203,55 +140,37 @@ public class MovementController : MonoBehaviour
         jumping = false;
     }
 
-    public void UpdateCollisions()
+    /// <summary>
+    /// This function takes the currently set gravity and stands the character so that its feet is going with the gravity.
+    /// </summary>
+    private void AlignCharacterWithGravity()
     {
-        collisions.Below = Physics.SphereCast(transform.position, 0.2f, -transform.up, out collisions.BelowHit, 1f);
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        if (DebugView)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position + -transform.up * 1f, .2f);
-        }
-    }
-
-    public struct Collisions
-    {
-        public RaycastHit BelowHit;
-        public bool Below;
+        Quaternion rotCur = Quaternion.FromToRotation(transform.up, -Gravity) * transform.rotation;
+        transform.rotation = rotCur;
     }
 
     private void Move(Vector3 moveDirection)
     {
 
-        if (collisions.Below)
-        {
-            //dont add gravity because the player is now on the ground.
-            Quaternion rotCur = Quaternion.FromToRotation(transform.up, collisions.BelowHit.normal) * transform.rotation;          
-            transform.rotation = rotCur;
-            if (!jumping)
-            {
-                rb.velocity = Vector3.zero;
-            }            
-        }
-        else
-        {
-            rb.AddForce(Gravity);
-        }
+        //if (collisions.Below)
+        //{
+        //    if (!jumping)
+        //    {
+        //        rb.velocity = Vector3.zero;
+        //    }
+        //}
+        //else
+        //{
+        //    rb.AddForce(Gravity);
+        //}
+
+        rb.AddForce(Gravity);
 
         transform.position += moveDirection * Time.deltaTime;
         //rb.MovePosition(rb.position + moveDirection * Time.deltaTime);
         //transform.position += moveDirection;
     }
 
-
-    private void UpdateAnimator()
-    {
-        anim.SetBool("Crouch", crouching);
-    }
 
     void Update()
     {
@@ -261,12 +180,46 @@ public class MovementController : MonoBehaviour
             speed = (speed == walkSpeed ? runSpeed : walkSpeed);
     }
 
+    private void UpdateAnimator()
+    {
+        anim.SetBool("Crouch", crouching);
+    }
+
+    public struct Collisions
+    {
+        public RaycastHit BelowHit;
+        public bool Below;
+    }
+
+    public bool InZeroGrav()
+    {
+        if(Gravity == Vector3.zero)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     // Store point that we're in contact with for use in FixedUpdate if needed
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         contactPoint = hit.point;
     }
 
+    private void OnDrawGizmos()
+    {
+        if (DebugView)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(collisions.BelowHit.point, .2f);
+        }
+    }
+
+    #region Getters_&_SETTERS
+    //GETTERS & SETTERS
     public void DisableMovement()
     {
         canMove = false;
@@ -286,4 +239,7 @@ public class MovementController : MonoBehaviour
     {
         return grounded;
     }
+
+    #endregion
+
 }
