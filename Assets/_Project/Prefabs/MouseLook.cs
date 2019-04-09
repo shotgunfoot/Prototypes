@@ -94,7 +94,8 @@ public class MouseLook : MonoBehaviour
 
             //This part turns the entire character left and right.
             Quaternion yRotation = Quaternion.identity;        
-            yRotation = Quaternion.AngleAxis(mouseAbsolute.x, Vector3.up);
+            yRotation = Quaternion.AngleAxis(TargetCharacterDirection.x < 180 ? mouseAbsolute.x : -mouseAbsolute.x, Vector3.up);            
+
             CharacterBody.transform.localRotation = yRotation * targetCharacterOrientation;
         }
         else

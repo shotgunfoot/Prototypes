@@ -39,6 +39,8 @@ public class MovementController : MonoBehaviour
 
     public bool DebugView = true;
 
+    public Transform feet;
+
     private Vector3 moveDirection = Vector3.zero;
     private bool grounded = false;
     private CapsuleCollider capsule;
@@ -119,8 +121,7 @@ public class MovementController : MonoBehaviour
         // Move the controller, and set grounded true or false depending on whether we're standing on something        
         grounded = collisions.Below;
 
-        CollisionCheck();
-
+        CollisionCheck();        
         Move(moveDirection);        
 
         UpdateAnimator();
@@ -131,7 +132,7 @@ public class MovementController : MonoBehaviour
     public void CollisionCheck()
     {
         //fire a sphere collider at players feet, if hitting floor store in collisions.below
-        collisions.Below = Physics.SphereCast(transform.position, .2f, -transform.up, out collisions.BelowHit, 1f);
+        collisions.Below = Physics.SphereCast(feet.position, .2f, -transform.up, out collisions.BelowHit, .1f);        
     }
 
     public IEnumerator Jumping()
@@ -143,10 +144,10 @@ public class MovementController : MonoBehaviour
     /// <summary>
     /// This function takes the currently set gravity and stands the character so that its feet is going with the gravity.
     /// </summary>
-    private void AlignCharacterWithGravity()
-    {
-        Quaternion rotCur = Quaternion.FromToRotation(transform.up, -Gravity) * transform.rotation;
-        transform.rotation = rotCur;
+    public void AlignCharacterWithGravity()
+    {        
+        //just set this characters gravity
+        //then tell the MouseLook script's targetdirection to be a direction that best fits the gravity direction.
     }
 
     private void Move(Vector3 moveDirection)
@@ -232,7 +233,7 @@ public class MovementController : MonoBehaviour
 
     public void SetGravity(Vector3 grav)
     {
-        Gravity = grav;
+        Gravity = grav;        
     }
 
     public bool Grounded()
@@ -240,6 +241,5 @@ public class MovementController : MonoBehaviour
         return grounded;
     }
 
-    #endregion
-
+    #endregion    
 }

@@ -59,7 +59,7 @@ MonoBehaviour:
   masterServerGameId: 09A20926-601A-4EF4-BFEE-374761B0D2A5
   showBoltEntityHints: 0
   serializeProjectAsText: 0
-  photonAppId: 
+  photonAppId: 27a2bfb5-55fe-4945-aea2-8a5d6b9d5eff
   photonUsePunch: 1
   photonCloudRegionIndex: 0
   instantiateMode: 2
