@@ -33,7 +33,13 @@ public class MovementController : MonoBehaviour
 
     public Rigidbody rb;
 
-    Collisions collisions;
+    // If the player ends up on a slope which is at least the Slope Limit as set on the character controller, then he will slide down
+    public bool slideWhenOverSlopeLimit = false;
+
+    // If checked and the player is on an object tagged "Slide", he will slide down it regardless of the slope limit
+    public bool slideOnTaggedObjects = false;
+
+    public float slideSpeed = 12.0f;
 
     public Animator anim;
 
@@ -44,12 +50,14 @@ public class MovementController : MonoBehaviour
     private Vector3 moveDirection = Vector3.zero;
     private bool grounded = false;
     private CapsuleCollider capsule;
-    private float speed;    
-    private Vector3 contactPoint;    
+    private float speed;
+    private Vector3 contactPoint;
     private int jumpTimer;
     private bool canMove = true;
     private PlayerInput pInput;
     private bool jumping;
+    private Collisions collisions;
+    private bool playerControl = false; //not currently used.
 
     #endregion    
 
@@ -57,7 +65,7 @@ public class MovementController : MonoBehaviour
     {
         pInput = GetComponent<PlayerInput>();
         capsule = GetComponent<CapsuleCollider>();
-        speed = walkSpeed;        
+        speed = walkSpeed;
         jumpTimer = antiBunnyHopFactor;
         rb = GetComponent<Rigidbody>();
     }
@@ -85,14 +93,49 @@ public class MovementController : MonoBehaviour
         }
 
         if (grounded)
-        {        
+        {
 
-            moveDirection = new Vector3(inputX * inputModifyFactor * speed, -antiBumpFactor, inputY * inputModifyFactor * speed);
-            moveDirection = transform.TransformDirection(moveDirection);            
+            bool sliding = false;
+            // See if surface immediately below should be slid down. We use this normally rather than a ControllerColliderHit point,
+            // because that interferes with step climbing amongst other annoyances
+            if (Physics.Raycast(transform.position, -transform.up, out collisions.BelowHit, 1.2f))
+            {
+                if (Vector3.Angle(collisions.BelowHit.normal, Vector3.up) > 45 - .1f)
+                    sliding = true;
+            }
+            // However, just raycasting straight down from the center can fail when on steep slopes
+            // So if the above raycast didn't catch anything, raycast down from the stored ControllerColliderHit point instead
+            else
+            {
+                Physics.Raycast(collisions.BelowHit.point + Vector3.up, -Vector3.up, out collisions.BelowHit);
+                if (Vector3.Angle(collisions.BelowHit.normal, Vector3.up) > 45 - .1f)
+                    sliding = true;
+            }            
 
             // If running isn't on a toggle, then use the appropriate speed depending on whether the run button is down
             if (!toggleRun)
                 speed = pInput.Run ? runSpeed : walkSpeed;
+
+            //----Sliding----///
+
+            // If sliding (and it's allowed), or if we're on an object tagged "Slide", get a vector pointing down the slope we're on
+            if ((sliding && slideWhenOverSlopeLimit) || (slideOnTaggedObjects && collisions.BelowHit.collider.tag == "Slide"))
+            {
+                Vector3 hitNormal = collisions.BelowHit.normal;
+                moveDirection = new Vector3(hitNormal.x, -hitNormal.y, hitNormal.z);
+                Vector3.OrthoNormalize(ref hitNormal, ref moveDirection);
+                moveDirection *= slideSpeed;
+                playerControl = false;
+            }
+            // Otherwise recalculate moveDirection directly from axes, adding a bit of -y to avoid bumping down inclines
+            else
+            {
+                moveDirection = new Vector3(inputX * inputModifyFactor * speed, 0, inputY * inputModifyFactor * speed);
+                moveDirection = transform.TransformDirection(moveDirection);
+                playerControl = true;
+            }
+
+            //----Sliding----///
 
             // Jump! But only if the jump button has been released and player has been grounded for a given number of frames
             // /// --- NOTE BY SION --- ///
@@ -117,12 +160,20 @@ public class MovementController : MonoBehaviour
                 StartCoroutine(Jumping());
             }
         }
+        else
+        {
+            //falling
+
+            //air control
+        }
+
+        
 
         // Move the controller, and set grounded true or false depending on whether we're standing on something        
         grounded = collisions.Below;
 
-        CollisionCheck();        
-        Move(moveDirection);        
+        CollisionCheck();
+        Move(moveDirection);
 
         UpdateAnimator();
     }
@@ -132,7 +183,8 @@ public class MovementController : MonoBehaviour
     public void CollisionCheck()
     {
         //fire a sphere collider at players feet, if hitting floor store in collisions.below
-        collisions.Below = Physics.SphereCast(feet.position, .2f, -transform.up, out collisions.BelowHit, .1f);        
+        //collisions.Below = Physics.SphereCast(transform.position, .5f, -transform.up, out collisions.BelowHit, .5f);
+        collisions.Below = Physics.Raycast(transform.position, -transform.up, out collisions.BelowHit, 1.2f);
     }
 
     public IEnumerator Jumping()
@@ -145,7 +197,7 @@ public class MovementController : MonoBehaviour
     /// This function takes the currently set gravity and stands the character so that its feet is going with the gravity.
     /// </summary>
     public void AlignCharacterWithGravity()
-    {        
+    {
         //just set this characters gravity
         //then tell the MouseLook script's targetdirection to be a direction that best fits the gravity direction.
     }
@@ -194,7 +246,7 @@ public class MovementController : MonoBehaviour
 
     public bool InZeroGrav()
     {
-        if(Gravity == Vector3.zero)
+        if (Gravity == Vector3.zero)
         {
             return true;
         }
@@ -215,7 +267,8 @@ public class MovementController : MonoBehaviour
         if (DebugView)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(collisions.BelowHit.point, .2f);
+            //Gizmos.DrawWireSphere(collisions.BelowHit.point, .5f);
+            Debug.DrawRay(transform.position, -transform.up * 1.2f);
         }
     }
 
@@ -233,7 +286,7 @@ public class MovementController : MonoBehaviour
 
     public void SetGravity(Vector3 grav)
     {
-        Gravity = grav;        
+        Gravity = grav;
     }
 
     public bool Grounded()
