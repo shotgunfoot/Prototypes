@@ -22,6 +22,7 @@ public class MovementController : MonoBehaviour
     public float jumpSpeed = 8.0f;
 
     public Vector3 Gravity;
+    public Vector3 Orientation;
 
     // Small amounts of this results in bumping when walking down slopes, but large amounts results in falling too fast
     public float antiBumpFactor = .75f;
@@ -56,8 +57,7 @@ public class MovementController : MonoBehaviour
     private bool canMove = true;
     private PlayerInput pInput;
     private bool jumping;
-    private Collisions collisions;
-    private bool playerControl = false; //not currently used.
+    private Collisions collisions;    
 
     #endregion    
 
@@ -93,49 +93,14 @@ public class MovementController : MonoBehaviour
         }
 
         if (grounded)
-        {
-
-            bool sliding = false;
-            // See if surface immediately below should be slid down. We use this normally rather than a ControllerColliderHit point,
-            // because that interferes with step climbing amongst other annoyances
-            if (Physics.Raycast(transform.position, -transform.up, out collisions.BelowHit, 1.2f))
-            {
-                if (Vector3.Angle(collisions.BelowHit.normal, Vector3.up) > 45 - .1f)
-                    sliding = true;
-            }
-            // However, just raycasting straight down from the center can fail when on steep slopes
-            // So if the above raycast didn't catch anything, raycast down from the stored ControllerColliderHit point instead
-            else
-            {
-                Physics.Raycast(collisions.BelowHit.point + Vector3.up, -Vector3.up, out collisions.BelowHit);
-                if (Vector3.Angle(collisions.BelowHit.normal, Vector3.up) > 45 - .1f)
-                    sliding = true;
-            }            
+        {         
 
             // If running isn't on a toggle, then use the appropriate speed depending on whether the run button is down
             if (!toggleRun)
                 speed = pInput.Run ? runSpeed : walkSpeed;
-
-            //----Sliding----///
-
-            // If sliding (and it's allowed), or if we're on an object tagged "Slide", get a vector pointing down the slope we're on
-            if ((sliding && slideWhenOverSlopeLimit) || (slideOnTaggedObjects && collisions.BelowHit.collider.tag == "Slide"))
-            {
-                Vector3 hitNormal = collisions.BelowHit.normal;
-                moveDirection = new Vector3(hitNormal.x, -hitNormal.y, hitNormal.z);
-                Vector3.OrthoNormalize(ref hitNormal, ref moveDirection);
-                moveDirection *= slideSpeed;
-                playerControl = false;
-            }
-            // Otherwise recalculate moveDirection directly from axes, adding a bit of -y to avoid bumping down inclines
-            else
-            {
+            
                 moveDirection = new Vector3(inputX * inputModifyFactor * speed, 0, inputY * inputModifyFactor * speed);
-                moveDirection = transform.TransformDirection(moveDirection);
-                playerControl = true;
-            }
-
-            //----Sliding----///
+                moveDirection = transform.TransformDirection(moveDirection);                            
 
             // Jump! But only if the jump button has been released and player has been grounded for a given number of frames
             // /// --- NOTE BY SION --- ///
@@ -165,9 +130,7 @@ public class MovementController : MonoBehaviour
             //falling
 
             //air control
-        }
-
-        
+        }        
 
         // Move the controller, and set grounded true or false depending on whether we're standing on something        
         grounded = collisions.Below;
@@ -287,6 +250,13 @@ public class MovementController : MonoBehaviour
     public void SetGravity(Vector3 grav)
     {
         Gravity = grav;
+    }
+    
+    public void SetGravityAndRotation(Vector3 grav, Vector3 rot)
+    {
+        Gravity = grav;
+        Orientation = rot;
+        transform.rotation = Quaternion.Euler(rot);
     }
 
     public bool Grounded()

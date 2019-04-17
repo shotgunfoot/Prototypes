@@ -61,10 +61,7 @@ public class MouseLook : MonoBehaviour
         // Get raw mouse input for a cleaner reading on more sensitive mice.
         Vector2 mouseDelta = new Vector2(Input.GetAxisRaw("MouseHorizontal"), Input.GetAxisRaw("MouseVertical"));
 
-        //if (Mathf.Abs(mouseAbsolute.y) > 90)
-        //{
-        //    Sensitivity.x = -Sensitivity.x;
-        //}
+
 
         // Scale input against the sensitivity setting and multiply that against the smoothing value.
         mouseDelta = Vector2.Scale(mouseDelta, new Vector2(Sensitivity.x * Smoothing.x, Sensitivity.y * Smoothing.y));
@@ -93,8 +90,8 @@ public class MouseLook : MonoBehaviour
             transform.localRotation = Quaternion.Euler(mouseAbsolute.y, 0, 0);
 
             //This part turns the entire character left and right.
-            Quaternion yRotation = Quaternion.identity;        
-            yRotation = Quaternion.AngleAxis(TargetCharacterDirection.x < 180 ? mouseAbsolute.x : -mouseAbsolute.x, Vector3.up);            
+            Quaternion yRotation = Quaternion.identity;
+            yRotation = Quaternion.AngleAxis(mouseAbsolute.x, Vector3.up);
 
             CharacterBody.transform.localRotation = yRotation * targetCharacterOrientation;
         }
