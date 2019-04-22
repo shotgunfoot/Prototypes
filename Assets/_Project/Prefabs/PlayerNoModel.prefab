@@ -524,13 +524,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4734c60e1c92fac43adce90d94a2915a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clampInDegrees: {x: 360, y: 130}
+  ClampInDegrees: {x: 360, y: 180}
   lockCursor: 1
-  sensitivity: {x: 2, y: 2}
-  smoothing: {x: 3, y: 3}
-  targetDirection: {x: 0, y: 0}
-  targetCharacterDirection: {x: 0, y: 0}
-  characterBody: {fileID: 1583007000}
+  Sensitivity: {x: 2, y: 2}
+  Smoothing: {x: 3, y: 3}
+  TargetDirection: {x: 0, y: 0}
+  TargetCharacterDirection: {x: 0, y: 0}
+  CharacterBody: {fileID: 1583007000}
+  MoveController: {fileID: 0}
 --- !u!1 &1529553983
 GameObject:
   m_ObjectHideFlags: 0

@@ -265,6 +265,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1508074124, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
+      propertyPath: CharacterBody
+      value: 
+      objectReference: {fileID: 1400068410}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
 --- !u!1001 &184270081
@@ -2519,6 +2523,12 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 30, y: 30, z: 30}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1400068410 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1583007000, guid: 174a0f67a6e2fc84e8989f59ef49dad3,
+    type: 3}
+  m_PrefabInstance: {fileID: 167595260}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1442122012
 Mesh:
   m_ObjectHideFlags: 0

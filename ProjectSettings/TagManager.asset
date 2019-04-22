@@ -10,6 +10,7 @@ TagManager:
   - Wieldable
   - Interactable
   - HookTarget
+  - WorldButton
   layers:
   - Default
   - TransparentFX
