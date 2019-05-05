@@ -22,14 +22,14 @@ public class HackingGame : MonoBehaviour
 
         DisplaySolution();
     }
-
+    
     private void DisplaySolution()
     {
         for (int i = 0; i < solutionLength; i++)
         {
             solutionImages[i].sprite = images[solution[i]];
         }
-    }
+    }     
 
     public void InputNumber(int num)
     {

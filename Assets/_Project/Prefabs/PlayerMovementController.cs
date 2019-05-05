@@ -98,7 +98,7 @@ public class PlayerMovementController : MonoBehaviour
         //anim.SetFloat("Forward", inputY);
         //anim.SetFloat("Left", inputX);
 
-        if (pInput.Crouch)
+        if (pInput.Crouch && canMove)
         {
             crouching = !crouching;
         }
@@ -160,7 +160,7 @@ public class PlayerMovementController : MonoBehaviour
             // /// --- NOTE BY SION --- ///
             if (!pInput.Jump)
                 jumpTimer++;
-            else if (jumpTimer >= antiBunnyHopFactor)
+            else if (jumpTimer >= antiBunnyHopFactor && canMove)
             {
                 moveDirection.y = jumpSpeed; /// THIS IS WHERE THE JUMP HAPPENS                
 
