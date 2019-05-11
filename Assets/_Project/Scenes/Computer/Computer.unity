@@ -385,6 +385,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1987573349, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
+      propertyPath: m_ForceIntoRT
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
 --- !u!1 &404719950
@@ -1258,32 +1262,50 @@ PrefabInstance:
     - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
         type: 3}
       propertyPath: m_isInputParsingRequired
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
         type: 3}
       propertyPath: m_text
-      value: '>.'
+      value: '>. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+        >. Butts buts butss butss
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 2
+      value: 234
       objectReference: {fileID: 0}
     - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 0
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 1
+      value: 37
       objectReference: {fileID: 0}
     - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 1
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
         type: 3}
@@ -1304,6 +1326,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_margin.w
       value: 10.16484
+      objectReference: {fileID: 0}
+    - target: {fileID: 5239941244503385735, guid: 53aeeea1a53453a4bbda11495b7ea0e1,
+        type: 3}
+      propertyPath: m_firstOverflowCharacterIndex
+      value: 234
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53aeeea1a53453a4bbda11495b7ea0e1, type: 3}

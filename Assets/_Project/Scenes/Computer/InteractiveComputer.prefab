@@ -87,7 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1009759182139969346}
   m_Layer: 0
-  m_Name: Computer
+  m_Name: InteractiveComputer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

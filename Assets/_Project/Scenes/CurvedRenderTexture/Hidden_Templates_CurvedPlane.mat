@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden_Templates_CurvedPlane
+  m_Shader: {fileID: 4800000, guid: 3a78e0d9bca774945b5f6570a98c30c1, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _RenderTexture:
+        m_Texture: {fileID: 8400000, guid: faaee181e71479b4b8f88da1041b6388, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Amplitude: 8
+    - _Ferquency: 1
+    - _Float0: 1
+    - _Frequency: 0.15
+    - _Int0: 0
+    - _Int1: 1
+    - _Offset: 0
+    - _Scale: 0.07
+    m_Colors:
+    - _Vector0: {r: 0, g: 0, b: 0, a: 0}
