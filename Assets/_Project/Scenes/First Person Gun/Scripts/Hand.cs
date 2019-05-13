@@ -77,7 +77,7 @@ public class Hand : MonoBehaviour
         {
             HoldableItem item = hit.collider.GetComponent<HoldableItem>();
             if (item != null)
-            {            
+            {
                 AttachObject(hand, item.gameObject, item.AttachPositionOffset, item.AttachRotationOffset);
             }
         }
@@ -89,25 +89,25 @@ public class Hand : MonoBehaviour
         if (attachOffset != Vector3.zero)
         {
             objectToAttach.transform.SetParent(HandFixPoint.transform, true);
-            
-            Vector3 offset;            
+
+            Vector3 offset;
             //if right hand we offset everything positively
             //otherwise we negate the x and z values.
             if (hand.Name == "RightHand")
             {
-                offset = new Vector3(-attachOffset.x, attachOffset.y, -attachOffset.z);                
+                offset = new Vector3(-attachOffset.x, attachOffset.y, -attachOffset.z);
             }
             else
             {
-                offset = new Vector3(attachOffset.x, attachOffset.y, attachOffset.z);                
-            }                      
+                offset = new Vector3(attachOffset.x, attachOffset.y, attachOffset.z);
+            }
             objectToAttach.transform.localPosition = Vector3.zero + offset;
             objectToAttach.transform.localRotation = Quaternion.identity * Quaternion.Euler(rotationOffset);
         }
         else
         {
             objectToAttach.transform.SetParent(HandFixPoint.transform);
-            
+
             objectToAttach.transform.localPosition = Vector3.zero;
             objectToAttach.transform.localRotation = Quaternion.identity;
         }
@@ -143,8 +143,8 @@ public class Hand : MonoBehaviour
     {
         if (DebugView)
         {
-            Ray ray = cam.ViewportPointToRay(new Vector3(.5f, .5f, 0));            
-            Debug.DrawRay(ray.origin, ray.direction * handDistance, Color.red, .5f);            
+            Ray ray = cam.ViewportPointToRay(new Vector3(.5f, .5f, 0));
+            Debug.DrawRay(ray.origin, ray.direction * handDistance, Color.red, .5f);
         }
     }
 }
