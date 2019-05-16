@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,7 @@ public class Hand : MonoBehaviour
     [SerializeField] private Sprites handSprites;
     [SerializeField] private Image handSprite;
     [SerializeField] private float handDistance = 1f;
+    [SerializeField] private bool disabled = false;
 
     public void HandHover()
     {
@@ -48,8 +50,6 @@ public class Hand : MonoBehaviour
             }
         }
     }
-
-
 
     public void UseObjectInHandHover()
     {
@@ -146,5 +146,20 @@ public class Hand : MonoBehaviour
             Ray ray = cam.ViewportPointToRay(new Vector3(.5f, .5f, 0));
             Debug.DrawRay(ray.origin, ray.direction * handDistance, Color.red, .5f);
         }
+    }
+
+    public bool Disabled()
+    {
+        return disabled;
+    }
+
+    public void DisableHand()
+    {
+        disabled = true;
+    }
+
+    public void EnableHand()
+    {
+        disabled = false;
     }
 }

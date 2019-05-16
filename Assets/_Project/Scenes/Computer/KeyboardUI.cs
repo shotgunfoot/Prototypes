@@ -12,30 +12,65 @@ public class KeyboardUI : MonoBehaviour, IHoverAction
     private PlayerMovementController player;
     private MouseLook mouseLook;
 
-    public void HoverAction()
-    {
-        FindPlayerAndCamera();
-        DisableMovementAndMouse();
-        ToggleUI();
-    }
-
     private void Update()
     {
         if (visible)
         {
             if (Input.GetButtonDown("Cancel"))
             {
-                ToggleUI();
-                EnableMovementAndMouse();
+                Cancel();
             }
         }
+    }
+
+    public void Cancel()
+    {
+        ToggleUI();
+        EnableMovementAndMouse();
+        LockMouse();
+        EnableHands();
+    }
+
+    private void LockMouse()
+    {
+        mouseLook.LockMouse();
+    }
+
+    public void HoverAction()
+    {
+        FindPlayerAndCamera();
+        DisableMovementAndMouse();
+        ReleaseMouse();
+        DisableHands();
+        ToggleUI();
+    }
+
+    private void EnableHands()
+    {
+        foreach (Hand hand in player.GetComponentsInChildren<Hand>())
+        {
+            hand.EnableHand();
+        }
+    }
+
+    private void DisableHands()
+    {
+        foreach (Hand hand in player.GetComponentsInChildren<Hand>())
+        {
+            hand.DisableHand();
+        }
+    }
+
+    private void ReleaseMouse()
+    {
+        mouseLook.ReleaseMouse();
     }
 
     private void EnableMovementAndMouse()
     {
         mouseLook.EnableMouseMovement();
         player.EnableMovement();
-    }    
+    }
 
     private void DisableMovementAndMouse()
     {

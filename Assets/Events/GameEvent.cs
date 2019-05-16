@@ -6,12 +6,13 @@
 // ----------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RoboRyanTron.Unite2017.Events
 {
     [CreateAssetMenu]
-    public class GameEvent : ScriptableObject
+    public class GameEvent : SerializedScriptableObject
     {
         /// <summary>
         /// The list of listeners that this event will notify if it is raised.

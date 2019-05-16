@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.Networking;
+using System;
 
 public class MouseLook : MonoBehaviour
 {
@@ -107,6 +108,16 @@ public class MouseLook : MonoBehaviour
 
         }
 
+    }
+
+    public void LockMouse()
+    {
+        lockCursor = true;
+    }
+
+    public void ReleaseMouse()
+    {
+        lockCursor = false;
     }
 
     public void EnableMouseMovement()
