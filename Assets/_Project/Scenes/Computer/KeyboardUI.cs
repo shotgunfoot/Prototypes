@@ -2,12 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class KeyboardUI : MonoBehaviour, IHoverAction
 {
 
     public Canvas UI;
+    public TMP_InputField InputField;
+    public AudioClips clips;
 
+    private AudioSource audioSource;
     private bool visible;
     private PlayerMovementController player;
     private MouseLook mouseLook;
@@ -23,17 +27,17 @@ public class KeyboardUI : MonoBehaviour, IHoverAction
         }
     }
 
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     public void Cancel()
     {
         ToggleUI();
         EnableMovementAndMouse();
         LockMouse();
         EnableHands();
-    }
-
-    private void LockMouse()
-    {
-        mouseLook.LockMouse();
     }
 
     public void HoverAction()
@@ -43,6 +47,17 @@ public class KeyboardUI : MonoBehaviour, IHoverAction
         ReleaseMouse();
         DisableHands();
         ToggleUI();
+        FocusOnInputField();
+    }
+
+    public void PlayRandomTypeSound()
+    {
+        audioSource.PlayOneShot(clips.sounds[UnityEngine.Random.Range(0, clips.sounds.Length)]);
+    }
+
+    private void FocusOnInputField()
+    {
+        InputField.ActivateInputField();
     }
 
     private void EnableHands()
@@ -51,6 +66,12 @@ public class KeyboardUI : MonoBehaviour, IHoverAction
         {
             hand.EnableHand();
         }
+    }
+
+
+    private void LockMouse()
+    {
+        mouseLook.LockMouse();
     }
 
     private void DisableHands()

@@ -25,12 +25,12 @@ public class ComputerConsole : MonoBehaviour
         builder = new StringBuilder();
     }
 
-    public void Validate(string input)
+    public void ValidateInput(string input)
     {
         string lowerCase = input.ToLower();
 
         builder.Append(fluff);        
-
+        builder.Append(input).AppendLine();
         if (computerEvents.CheckEventsAndInvoke(lowerCase))
         {
             builder.Append("Executing Command...").AppendLine();       
