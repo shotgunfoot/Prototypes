@@ -11,8 +11,9 @@ public class ComputerEvent : SerializedScriptableObject
 
     [Header("The keys need to be lowercase!")]
     public Dictionary<string, GameEvent> Commands;
+    
 
-    public bool CheckEventsAndInvoke(string input)
+    public bool CheckForEvent(string input)
     {
         foreach (string key in Commands.Keys)
         {

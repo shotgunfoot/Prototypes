@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a043a37973ca53a498c4847f7d16a717, type: 3}
-  m_Name: ComputerEvents
+  m_Name: DefaultComputerEvents
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 11400000, guid: 55fa3b6516c13784895585ec042c6d59, type: 2}
-    - {fileID: 11400000, guid: e1df5651aa3039c419853339ec6202f4, type: 2}
     - {fileID: 11400000, guid: ebd875158448df047a08eb40659ce7da, type: 2}
     - {fileID: 11400000, guid: 64c0bc89ff0afde4d980382e70cab63c, type: 2}
+    - {fileID: 11400000, guid: 29c197c261b0cd74f9277fd4f4175290, type: 2}
     - {fileID: 11400000, guid: b5a26f0af70333742bc4599bf63682df, type: 2}
+    - {fileID: 11400000, guid: 8a910bed39206c641b10b5570199154c, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -39,13 +40,13 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 5
+      Data: 6
     - Name: 
       Entry: 7
       Data: 
     - Name: $k
       Entry: 1
-      Data: open
+      Data: door
     - Name: $v
       Entry: 10
       Data: 0
@@ -57,7 +58,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: close
+      Data: lock
     - Name: $v
       Entry: 10
       Data: 1
@@ -69,7 +70,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: lock
+      Data: help
     - Name: $v
       Entry: 10
       Data: 2
@@ -81,7 +82,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: help
+      Data: quit
     - Name: $v
       Entry: 10
       Data: 3
@@ -97,6 +98,18 @@ MonoBehaviour:
     - Name: $v
       Entry: 10
       Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: email
+    - Name: $v
+      Entry: 10
+      Data: 5
     - Name: 
       Entry: 8
       Data: 
