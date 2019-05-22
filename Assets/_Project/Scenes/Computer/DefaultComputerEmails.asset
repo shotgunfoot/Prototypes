@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 344cccc8c977ea74fa4f6ab640f3af04, type: 3}
+  m_Name: DefaultComputerEmails
+  m_EditorClassIdentifier: 
+  emails:
+  - command: 1
+    title: Dollar Shave Club
+    subject: Get Monthly Blades!
+    contents: You want new blades every month? Sure you do, who doesn't! Call 444-555-666
+      now and for a low price of $2.99 you can get your blades shipped right to your
+      door every month.
+  - command: 2
+    title: Bigger Car
+    subject: Get better car now!
+    contents: You need a new car. Your old one is too tiny and terrible. Buy now!
+  - command: 3
+    title: more fluff
+    subject: even more fluff!
+    contents: this is just another fluffy email that contains nothing of value. Just
+      more padding to show off multiple emails in a row. Hopefully this worked the
+      way I wanted it to!
