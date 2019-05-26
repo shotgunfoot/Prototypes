@@ -74,12 +74,13 @@ public class EmailCreationWizard : EditorWindow
 
             if (GUILayout.Button(emailsSO.Emails[i].Title, GUILayout.ExpandWidth(false)))
             {
-                toggles[i] = !toggles[i];     
+                toggles[i] = !toggles[i];
             }
 
             if (GUILayout.Button("Delete This Email", buttonRedStyle, GUILayout.ExpandWidth(false)))
             {
                 DeleteEmail(i);
+                i = 0;
             }
 
             GUILayout.EndHorizontal();
@@ -122,7 +123,7 @@ public class EmailCreationWizard : EditorWindow
 
     private void DeleteEmail(int index)
     {
-        emailsSO.Emails.RemoveAt(index);
+        emailsSO.DeleteEmail(index);
         UpdateEmailData();
         UpdateToggles();
     }

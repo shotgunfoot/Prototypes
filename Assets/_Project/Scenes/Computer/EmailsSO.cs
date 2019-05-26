@@ -4,6 +4,7 @@ using Sirenix.Serialization;
 using Sirenix.OdinInspector;
 using System;
 using System.Text;
+using UnityEditor;
 
 [CreateAssetMenu(fileName = "EmailsSO", menuName = "Prototypes/EmailsSO", order = 0)]
 public class EmailsSO : ScriptableObject
@@ -49,5 +50,11 @@ public class EmailsSO : ScriptableObject
     public void OverwriteEmail(Email email, int index)
     {
         emails[index] = email;
+    }
+
+    public void DeleteEmail(int index)
+    {
+        emails.RemoveAt(index);
+        EditorUtility.SetDirty(this);
     }
 }

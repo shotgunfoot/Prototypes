@@ -18,6 +18,7 @@ public class EmailsSOEditor : Editor
             EmailCreationWizard wiz = EditorWindow.GetWindow<EmailCreationWizard>();
             wiz.ShowWindow(email);   
         }
+        base.DrawDefaultInspector();
     }
 
 }

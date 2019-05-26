@@ -23,9 +23,3 @@ MonoBehaviour:
     title: Bigger Car
     subject: Get better car now!
     contents: You need a new car. Your old one is too tiny and terrible. Buy now!
-  - command: 3
-    title: more fluff
-    subject: even more fluff!
-    contents: this is just another fluffy email that contains nothing of value. Just
-      more padding to show off multiple emails in a row. Hopefully this worked the
-      way I wanted it to!
