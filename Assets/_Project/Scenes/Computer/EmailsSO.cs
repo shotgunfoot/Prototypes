@@ -14,11 +14,12 @@ public class EmailsSO : ScriptableObject
         [SerializeField] private string command;
         [SerializeField] private string title;
         [SerializeField] private string subject;
-        [SerializeField] private string contents;        
-        public string Command { get => command; }
-        public string Title { get => title; }
-        public string Subject { get => subject; }
-        public string Contents { get => contents; }        
+        [SerializeField] private string contents;
+        
+        public string Title { get => title; set => title = value;}
+        public string Subject { get => subject; set => subject = value;}
+        public string Contents { get => contents; set => contents = value;}
+        public string Command { get => command; set => command = value; }
     }
     [SerializeField] private List<Email> emails;
 
@@ -33,10 +34,20 @@ public class EmailsSO : ScriptableObject
             {
                 builder.Append("Title : " + email.Title).AppendLine();
                 builder.Append("Subject : " + email.Subject).AppendLine();
-                builder.Append(email.Contents).AppendLine();                
+                builder.Append(email.Contents).AppendLine();
                 return true;
             }
         }
         return false;
+    }
+
+    public void AddEmail(Email email)
+    {        
+        emails.Add(email);
+    }
+
+    public void OverwriteEmail(Email email, int index)
+    {
+        emails[index] = email;
     }
 }
