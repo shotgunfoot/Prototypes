@@ -12,7 +12,7 @@ using System.Linq;
  */
 public class ConsoleOutput : MonoBehaviour
 {    
-    public TextMeshProUGUI console;
+    public TextMeshProUGUI console;    
     public ScrollRect content;        
 
     public void ApplyToText(StringBuilder builder)

@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: DefaultComputerEmails
   m_EditorClassIdentifier: 
   emails:
-  - command: 1
-    title: Dollar Shave Club
-    subject: Get Monthly Blades!
-    contents: You want new blades every month? Sure you do, who doesn't! Call 444-555-666
-      now and for a low price of $2.99 you can get your blades shipped right to your
-      door every month.
-  - command: 2
-    title: Bigger Car
-    subject: Get better car now!
-    contents: You need a new car. Your old one is too tiny and terrible. Buy now!
+  - Command: Toast
+    Title: asfasf
+    Subject: asfasf
+    Contents: asfasfafs
+  - Command: ree
+    Title: too many rees
+    Subject: all the rees
+    Contents: '<i>DONT YOU LOVE TO REE WITH ME</i>
+
+      <b>I CAN REE ALL NIGHT LONG</b>
+
+      REEEEEEEEEEEEEEEEEEEEEEE!'

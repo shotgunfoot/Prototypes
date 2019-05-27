@@ -10,21 +10,16 @@ using UnityEditor;
 public class EmailsSO : ScriptableObject
 {
     [System.Serializable]
-    public struct Email
+    public class Email
     {
-        [SerializeField] private string command;
-        [SerializeField] private string title;
-        [SerializeField] private string subject;
-        [SerializeField] private string contents;
-        
-        public string Title { get => title; set => title = value;}
-        public string Subject { get => subject; set => subject = value;}
-        public string Contents { get => contents; set => contents = value;}
-        public string Command { get => command; set => command = value; }
+        [SerializeField] public string Command;
+        [SerializeField] public string Title;
+        [SerializeField] public string Subject;
+        [SerializeField] public string Contents;
     }
     [SerializeField] private List<Email> emails;
 
-    public List<Email> Emails { get => emails; }
+    public List<Email> Emails { get { return emails; } }
 
     public bool CheckForEmail(string lowerCase, StringBuilder builder)
     {
@@ -43,18 +38,17 @@ public class EmailsSO : ScriptableObject
     }
 
     public void AddEmail(Email email)
-    {        
+    {
         emails.Add(email);
     }
 
-    public void OverwriteEmail(Email email, int index)
+    public void SaveData()
     {
-        emails[index] = email;
+        EditorUtility.SetDirty(this);
     }
 
     public void DeleteEmail(int index)
     {
         emails.RemoveAt(index);
-        EditorUtility.SetDirty(this);
     }
 }
