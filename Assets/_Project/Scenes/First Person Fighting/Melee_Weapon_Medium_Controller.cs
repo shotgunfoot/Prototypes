@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 /*
@@ -36,6 +37,7 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
 
     private void Update()
     {
+
         if (!swinging)
         {
             if (Input.GetButtonDown("LeftHand"))
@@ -52,18 +54,44 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
             }
             else
             {
+                //unwind and go back to idle anim
                 windUpTime -= Time.deltaTime * transitionScale;
                 idling -= Time.deltaTime * transitionScale * 2;
             }
 
             if (Input.GetButtonUp("LeftHand") && windUpTime >= windUpTimeRequired)
             {
-                //if enough wind up, release and play swing anim                
-                StartCoroutine(OverheadSwing());
+
+                //Play swinging animation based on movement direction
+                Vector2 direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+                FigureOutWhichSwing(direction);
+
             }
         }
         idling = Mathf.Clamp01(idling);
         UpdateAnimParams();
+    }
+
+    private void FigureOutWhichSwing(Vector2 direction)
+    {
+        if (direction.y == 0 && direction.x < 0)
+        {
+            //swing right to left
+            Debug.Log("Swinging left to right!");
+            return;
+        }
+        else if (direction.y == 0 && direction.x > 0)
+        {
+            //swing left to right
+            Debug.Log("Swinging right to left!");
+            return;
+        }
+        else
+        {
+            //default overhead swing
+            StartCoroutine(OverheadSwing());
+            return;
+        }
     }
 
     private IEnumerator OverheadSwing()
