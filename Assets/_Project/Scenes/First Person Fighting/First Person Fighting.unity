@@ -370,6 +370,12 @@ MonoBehaviour:
   windUpTimeRequired: 1
   timeBetweenSwings: 2
   transitionScale: 1.5
+  shakeMagnitude: 6
+  shakeRoughness: 0.1
+  shakeFadeIn: 0.2
+  shakeFadeOut: 0.2
+  shakePos: {x: 0, y: 0, z: 0}
+  shakeRotation: {x: -50, y: 0, z: 0}
 --- !u!1001 &925409738
 PrefabInstance:
   m_ObjectHideFlags: 0

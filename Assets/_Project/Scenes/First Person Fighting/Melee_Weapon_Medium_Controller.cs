@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
+using EZCameraShake;
 using UnityEngine;
 /*
     Melee_Weapon_Medium_Controller
@@ -24,19 +24,31 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
     [SerializeField] private float windUpTimeRequired = 1f;
     [SerializeField] private float timeBetweenSwings = 2f;
     [SerializeField] private float transitionScale = .2f;//Controls how fast the animation will blend back and forth from idle to buildup.
+    [SerializeField] private float shakeMagnitude;
+    [SerializeField] private float shakeRoughness;
+    [SerializeField] private float shakeFadeIn;
+    [SerializeField] private float shakeFadeOut;
+    [SerializeField] private Vector3 shakePos;
+    [SerializeField] private Vector3 shakeRotation;
     private Animator anim;
     private float windUpTime = 0f;
     private float idling = 0;
     private float timeSinceLastSwing = 0f;
-    private bool swinging = false;
+    private bool swinging = false;    
+    
+    private CameraShaker shaker;
 
     private void Start()
     {
         anim = GetComponent<Animator>();
+        shaker = FindObjectOfType<CameraShaker>();        
     }
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.F)){
+            Shake();
+        }
 
         if (!swinging)
         {
@@ -72,6 +84,11 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
         UpdateAnimParams();
     }
 
+    private void Shake()
+    {
+        shaker.ShakeOnce(shakeMagnitude, shakeRoughness, shakeFadeIn, shakeFadeOut, shakePos, shakeRotation);
+    }
+
     private void FigureOutWhichSwing(Vector2 direction)
     {
         if (direction.y == 0 && direction.x < 0)
@@ -89,7 +106,8 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
         else
         {
             //default overhead swing
-            StartCoroutine(OverheadSwing());
+            StartCoroutine(OverheadSwing());        
+            Shake();
             return;
         }
     }
