@@ -375,7 +375,9 @@ MonoBehaviour:
   shakeFadeIn: 0.2
   shakeFadeOut: 0.2
   shakePos: {x: 0, y: 0, z: 0}
-  shakeRotation: {x: -50, y: 0, z: 0}
+  overHeadShake: {x: -50, y: 0, z: 0}
+  LeftToRightShake: {x: 0, y: 50, z: 0}
+  RightToLeftShake: {x: 0, y: -50, z: 0}
 --- !u!1001 &925409738
 PrefabInstance:
   m_ObjectHideFlags: 0

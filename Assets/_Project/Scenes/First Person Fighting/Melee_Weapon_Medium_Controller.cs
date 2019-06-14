@@ -21,7 +21,7 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
 {
 
     [SerializeField] private Animator playerAnim;
-    [SerializeField] private float windUpTimeRequired = 1f;
+    [SerializeField] private float windUpTimeRequired = .8f;
     [SerializeField] private float timeBetweenSwings = 2f;
     [SerializeField] private float transitionScale = .2f;//Controls how fast the animation will blend back and forth from idle to buildup.
     [SerializeField] private float shakeMagnitude;
@@ -29,26 +29,28 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
     [SerializeField] private float shakeFadeIn;
     [SerializeField] private float shakeFadeOut;
     [SerializeField] private Vector3 shakePos;
-    [SerializeField] private Vector3 shakeRotation;
+    [SerializeField] private Vector3 overHeadShake;
+    [SerializeField] private Vector3 LeftToRightShake;
+    [SerializeField] private Vector3 RightToLeftShake;
     private Animator anim;
     private float windUpTime = 0f;
     private float idling = 0;
     private float timeSinceLastSwing = 0f;
-    private bool swinging = false;    
-    
+    private bool swinging = false;
+    private float animDirection;
+
     private CameraShaker shaker;
 
     private void Start()
     {
         anim = GetComponent<Animator>();
-        shaker = FindObjectOfType<CameraShaker>();        
+        shaker = FindObjectOfType<CameraShaker>();
     }
 
     private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.F)){
-            Shake();
-        }
+    {    
+
+        animDirection = Input.GetAxis("Horizontal");
 
         if (!swinging)
         {
@@ -79,37 +81,59 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
                 FigureOutWhichSwing(direction);
 
             }
-        }
+        }        
         idling = Mathf.Clamp01(idling);
         UpdateAnimParams();
     }
 
-    private void Shake()
+    private void Shake(Vector3 direction)
     {
-        shaker.ShakeOnce(shakeMagnitude, shakeRoughness, shakeFadeIn, shakeFadeOut, shakePos, shakeRotation);
+        shaker.ShakeOnce(shakeMagnitude, shakeRoughness, shakeFadeIn, shakeFadeOut, shakePos, direction);
     }
 
     private void FigureOutWhichSwing(Vector2 direction)
     {
-        if (direction.y == 0 && direction.x < 0)
+        if (animDirection < 0)
         {
             //swing right to left
-            Debug.Log("Swinging left to right!");
+            StartCoroutine(LeftToRightSwing());
+            Shake(LeftToRightShake);
             return;
         }
-        else if (direction.y == 0 && direction.x > 0)
+        else if (animDirection > 0)
         {
             //swing left to right
-            Debug.Log("Swinging right to left!");
+            StartCoroutine(RightToLeftSwing());
+            Shake(RightToLeftShake);
             return;
         }
         else
         {
             //default overhead swing
-            StartCoroutine(OverheadSwing());        
-            Shake();
+            StartCoroutine(OverheadSwing());
+            Shake(overHeadShake);
             return;
         }
+    }
+
+    private IEnumerator LeftToRightSwing()
+    {
+        swinging = true;
+        windUpTime = 0;
+        idling = 0;
+        anim.Play("LeftToRight_Medium_Swing");
+        yield return new WaitForSeconds(timeBetweenSwings);
+        swinging = false;
+    }
+
+    private IEnumerator RightToLeftSwing()
+    {
+        swinging = true;
+        windUpTime = 0;
+        idling = 0;
+        anim.Play("RightToLeft_Medium_Swing");    
+        yield return new WaitForSeconds(timeBetweenSwings);
+        swinging = false;
     }
 
     private IEnumerator OverheadSwing()
@@ -117,14 +141,16 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
         swinging = true;
         windUpTime = 0;
         idling = 0;
-        anim.Play("Overhead_Medium_Swing");
+        anim.Play("Overhead_Medium_Swing");        
         yield return new WaitForSeconds(timeBetweenSwings);
         swinging = false;
     }
 
     private void UpdateAnimParams()
     {
-        anim.SetFloat("BuildUp", windUpTime);
+        float temp = Mathf.Clamp01(windUpTime);
+        anim.SetFloat("BuildUp", temp);
         anim.SetFloat("Idling", idling);
+        anim.SetFloat("Direction", animDirection);
     }
 }
