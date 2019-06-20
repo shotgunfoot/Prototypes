@@ -316,6 +316,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 773947781, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1639961893, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1987573349, guid: 174a0f67a6e2fc84e8989f59ef49dad3, type: 3}
       propertyPath: m_ForceIntoRT
       value: 1
@@ -1140,23 +1148,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Computer-UI
       objectReference: {fileID: 0}
-    - target: {fileID: 7195086188126819033, guid: eac8af502c02f1b4ebc7b0925ee01192,
-        type: 3}
-      propertyPath: listener
-      value: 
-      objectReference: {fileID: 1145539542}
-    - target: {fileID: 7195086188126819033, guid: eac8af502c02f1b4ebc7b0925ee01192,
-        type: 3}
-      propertyPath: ComputerEmails
-      value: 
-      objectReference: {fileID: 11400000, guid: 89cdfc801c131db4698a1fb5b5e5e894,
-        type: 2}
-    - target: {fileID: 7195086188126819033, guid: eac8af502c02f1b4ebc7b0925ee01192,
-        type: 3}
-      propertyPath: ComputerEvents
-      value: 
-      objectReference: {fileID: 11400000, guid: 8a6adbde83328de44881c8e332d035ff,
-        type: 2}
     - target: {fileID: 1982514081, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.032
@@ -1201,23 +1192,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 948759807, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 973601709, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1048060154, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5938374673422652745, guid: eac8af502c02f1b4ebc7b0925ee01192,
+    - target: {fileID: 7195086188126819033, guid: eac8af502c02f1b4ebc7b0925ee01192,
         type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
-      objectReference: {fileID: 0}
+      propertyPath: listener
+      value: 
+      objectReference: {fileID: 1145539542}
+    - target: {fileID: 7195086188126819033, guid: eac8af502c02f1b4ebc7b0925ee01192,
+        type: 3}
+      propertyPath: ComputerEmails
+      value: 
+      objectReference: {fileID: 11400000, guid: 89cdfc801c131db4698a1fb5b5e5e894,
+        type: 2}
+    - target: {fileID: 7195086188126819033, guid: eac8af502c02f1b4ebc7b0925ee01192,
+        type: 3}
+      propertyPath: ComputerEvents
+      value: 
+      objectReference: {fileID: 11400000, guid: 8a6adbde83328de44881c8e332d035ff,
+        type: 2}
     - target: {fileID: 1048060153, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -1266,7 +1257,24 @@ PrefabInstance:
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
       value: sdgadg
       objectReference: {fileID: 0}
+    - target: {fileID: 948759807, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1048060154, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 973601709, guid: eac8af502c02f1b4ebc7b0925ee01192, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 280776531830853088, guid: eac8af502c02f1b4ebc7b0925ee01192,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5938374673422652745, guid: eac8af502c02f1b4ebc7b0925ee01192,
         type: 3}
       propertyPath: m_RaycastTarget
       value: 0

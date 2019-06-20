@@ -18,9 +18,13 @@ public class EmailCreationWizard : EditorWindow
     private GUIStyle buttonRedStyle = new GUIStyle(EditorStyles.toolbarButton);
     private GUIStyle errorCodeStyle = new GUIStyle(EditorStyles.helpBox);
     private string errorString;
-
+    
     public void ShowWindow(EmailsSO _email)
     {
+        if (_email.Emails.Count <= 0)
+        {
+            _email.CreateDummyEmail();
+        }
         EmailsToAddTo = _email;
         emailsSO = _email;
         UpdateToggles();

@@ -19,8 +19,12 @@ public class EmailsSO : ScriptableObject
     }
     [SerializeField] private List<Email> emails;
 
-    public List<Email> Emails { get { return emails; } }
+    private void Awake() {
+        emails = new List<Email>();
+        CreateDummyEmail();
+    }
 
+    public List<Email> Emails { get { return emails; } }
     public bool CheckForEmail(string lowerCase, StringBuilder builder)
     {
         builder.AppendLine();
@@ -35,6 +39,16 @@ public class EmailsSO : ScriptableObject
             }
         }
         return false;
+    }
+
+    public void CreateDummyEmail()
+    {
+        Email dummyEmail = new Email();
+        dummyEmail.Command = "Default";
+        dummyEmail.Contents = "Default";
+        dummyEmail.Title = "Default";
+        dummyEmail.Subject = "Default";
+        emails.Add(dummyEmail);
     }
 
     public void AddEmail(Email email)
