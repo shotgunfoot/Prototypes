@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ComputerEventsSO
   ComputerEvents:
   - consoleEvent: {fileID: 11400000, guid: 3a9cb0b4f53c4944895f25f0ca6ac8e1, type: 2}
-    command: Help
+    command: help
     response: Here's a list of commands you can type!
   - consoleEvent: {fileID: 11400000, guid: c7282e0c2be9be34590e55594bd83188, type: 2}
-    command: Email
+    command: email
     response: Accessing Email...

@@ -1607,6 +1607,7 @@ GameObject:
   - component: {fileID: 1171411341}
   - component: {fileID: 1171411340}
   - component: {fileID: 1171411339}
+  - component: {fileID: 1171411342}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -1694,6 +1695,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1171411342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171411337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4826e7b2ae79a49498ac77a88b7b4b39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1335325333
 GameObject:
   m_ObjectHideFlags: 0
@@ -2590,6 +2603,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Computer-UI
       objectReference: {fileID: 0}
+    - target: {fileID: 8312164983269712820, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: ComputerEvents
+      value: 
+      objectReference: {fileID: 11400000, guid: a36e46bbfeba5984eb4d64168929c7cb,
+        type: 2}
+    - target: {fileID: 8312164983269712820, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: ComputerEmails
+      value: 
+      objectReference: {fileID: 11400000, guid: 78ef55cf1f8321e4aaaee6bbd6f3ced7,
+        type: 2}
     - target: {fileID: 1189138073629225676, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2645,18 +2670,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8312164983269712820, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
-        type: 3}
-      propertyPath: ComputerEvents
-      value: 
-      objectReference: {fileID: 11400000, guid: a36e46bbfeba5984eb4d64168929c7cb,
-        type: 2}
-    - target: {fileID: 8312164983269712820, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
-        type: 3}
-      propertyPath: ComputerEmails
-      value: 
-      objectReference: {fileID: 11400000, guid: 78ef55cf1f8321e4aaaee6bbd6f3ced7,
-        type: 2}
     - target: {fileID: 1189138074842239380, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[2].m_Target
@@ -2670,6 +2683,71 @@ PrefabInstance:
     - target: {fileID: 1189138074842239380, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
         type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1189138073793457624, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1189138073793457625, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118901969715258580, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118901969715258580, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118901969715258580, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 3576818613314132361, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3576818613314132361, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1189138073381729426, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1189138073381729426, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1189138073381729426, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -132.32837
+      objectReference: {fileID: 0}
+    - target: {fileID: 1189138073381729426, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7098816620063579312, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7098816620063579312, guid: 675cad0d87a47d34ea223cf5f8ab2d26,
+        type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

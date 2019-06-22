@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KeypadEmails
   m_EditorClassIdentifier: 
   emails:
-  - Command: code
-    Title: Safe Code
-    Subject: DELETE ME
-    Contents: The safe code is <b>0451</b>. Please delete this ASAP!
+  - Command: safecode
+    Title: The safe code
+    Subject: THIS IS THE SAFE CODE
+    Contents: DELETE ME AFTERWARDS! The code is <b>0451</b>
