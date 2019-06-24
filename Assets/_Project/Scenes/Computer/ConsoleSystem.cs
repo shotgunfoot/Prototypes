@@ -32,11 +32,9 @@ public class ConsoleSystem : MonoBehaviour
 
             builder.Append(input).AppendLine();
 
-            if (ComputerEvents.CheckForEvent(lowerCase))
-            {
-                //SendToConsoleOutput();
-            }
-            else if (emailsMenuOpen)
+            ComputerEvents.CheckForEvent(lowerCase, builder);
+
+            if (emailsMenuOpen)
             {
                 ComputerEmails.CheckForEmail(lowerCase, builder);
                 SendToConsoleOutput();
@@ -51,7 +49,7 @@ public class ConsoleSystem : MonoBehaviour
 
     public void Help()
     {
-        string lastKey = ComputerEvents.ComputerEvents.Last().command;        
+        string lastKey = ComputerEvents.ComputerEvents.Last().command;
         foreach (ComputerEventSO.CompEvent CE in ComputerEvents.ComputerEvents)
         {
             if (CE.command != lastKey)
@@ -84,18 +82,18 @@ public class ConsoleSystem : MonoBehaviour
         emailsMenuOpen = false;
     }
 
-//BUG ISSUE
-//This isn't ?thread safe? If thats the correct term.
-//At no point am I checking ot see if the coroutine being called is already running, therefore it will attempt to hijack the 
-//string builders in use and cause a horrific never ending while loop.
+    //BUG ISSUE
+    //This isn't ?thread safe? If thats the correct term.
+    //At no point am I checking ot see if the coroutine being called is already running, therefore it will attempt to hijack the 
+    //string builders in use and cause a horrific never ending while loop.
 
-//Current fix: Careful where I am calling this method. The problem with that is its screwing over when events have a respone to add to the builder and when the 
-//event is raised it also wants to add to the stringbuilder.
+    //Current fix: Careful where I am calling this method. The problem with that is its screwing over when events have a respone to add to the builder and when the 
+    //event is raised it also wants to add to the stringbuilder.
 
-//Possible solution: 
+    //Possible solution: 
     private void SendToConsoleOutput()
     {
-        ConsoleOutput.ApplyToText(builder);        
+        ConsoleOutput.ApplyToText(builder);
     }
 
 }

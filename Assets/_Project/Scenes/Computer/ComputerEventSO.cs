@@ -18,15 +18,15 @@ public class ComputerEventSO : ScriptableObject
     public List<CompEvent> ComputerEvents;
 
     //Checks if the SO has the event stored and if so, raises the event and returning true. Otherwise returns false.
-    public bool CheckForEvent(string lowerCase)
+    public bool CheckForEvent(string lowerCase, StringBuilder builder)
     {
-        //builder.AppendLine();
+        builder.AppendLine();
         foreach (CompEvent ev in ComputerEvents)
         {
             if (lowerCase == ev.command)
             {
-                //builder.Append("Executing command : " + ev.command).AppendLine();
-                //builder.Append(ev.response).AppendLine();
+                builder.Append("Executing command : " + ev.command).AppendLine();
+                builder.Append(ev.response).AppendLine();
                 ev.consoleEvent.Raise();
                 return true;
             }

@@ -18,6 +18,8 @@ public class ConsoleOutput : MonoBehaviour
     private StringBuilder localBuilder = new StringBuilder();
     public bool isApplyingText = false;
 
+    public ConsoleInput cInput;
+
     [SerializeField] private float textRevealSpeed;
     public void ApplyToText(StringBuilder builder)
     {
@@ -30,7 +32,7 @@ public class ConsoleOutput : MonoBehaviour
         //loop through passed in string builder length, adding the currently focused letter to the localstringbuilder
         //then update the text to reflect it, then continue the loop at a designated speed.
         int i = 0;
-        float timer = 0;        
+        float timer = 0;
         while (i < _builder.Length)
         {
             if (timer > textRevealSpeed)
@@ -42,6 +44,17 @@ public class ConsoleOutput : MonoBehaviour
                 ForceToBottom();
             }
             timer += Time.deltaTime;
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                _builder.Remove(0, i);
+                localBuilder.Append(_builder.ToString());
+                console.text = localBuilder.ToString();
+                ForceToBottom();
+                i = _builder.Length + 1;
+                cInput.InputField.text = "";       
+            }
+
             yield return null;
         }
         _builder.Clear();
@@ -55,9 +68,10 @@ public class ConsoleOutput : MonoBehaviour
         Canvas.ForceUpdateCanvases();
     }
 
-    public void ClearText(){
+    public void ClearText()
+    {
         localBuilder.Clear();
         console.text = "";
-        ForceToBottom();        
+        ForceToBottom();
     }
 }
