@@ -9,13 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: a043a37973ca53a498c4847f7d16a717, type: 3}
   m_Name: KeypadComputerEvents
   m_EditorClassIdentifier: Assembly-CSharp::ComputerEventsSO
-  ComputerEvents:
-  - consoleEvent: {fileID: 11400000, guid: 3a9cb0b4f53c4944895f25f0ca6ac8e1, type: 2}
-    command: help
-    response: Here's a list of commands you can type!
-  - consoleEvent: {fileID: 11400000, guid: c7282e0c2be9be34590e55594bd83188, type: 2}
-    command: email
-    response: Accessing Email...

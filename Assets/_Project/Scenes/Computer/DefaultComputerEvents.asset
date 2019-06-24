@@ -9,28 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: a043a37973ca53a498c4847f7d16a717, type: 3}
   m_Name: DefaultComputerEvents
-  m_EditorClassIdentifier: Assembly-CSharp::ComputerEventsSO
+  m_EditorClassIdentifier: 
   ComputerEvents:
-  - consoleEvent: {fileID: 11400000, guid: 64c0bc89ff0afde4d980382e70cab63c, type: 2}
-    command: help
-    response: 
-  - consoleEvent: {fileID: 11400000, guid: b5a26f0af70333742bc4599bf63682df, type: 2}
-    command: color
-    response: Check out the table! The color has changed!
-  - consoleEvent: {fileID: 11400000, guid: 55fa3b6516c13784895585ec042c6d59, type: 2}
-    command: door
-    response: Careful door is moving!
-  - consoleEvent: {fileID: 11400000, guid: 0a1533b9103a50b4eb777d05061d6150, type: 2}
-    command: clear
-    response: Clearing the console!
-  - consoleEvent: {fileID: 11400000, guid: 29c197c261b0cd74f9277fd4f4175290, type: 2}
-    command: quit
-    response: Quitting!
-  - consoleEvent: {fileID: 11400000, guid: 595cc481cb35f044cbd9e46121589644, type: 2}
-    command: menu
-    response: 
-  - consoleEvent: {fileID: 11400000, guid: 8a910bed39206c641b10b5570199154c, type: 2}
-    command: email
-    response: 'Inbox: '
+  - command: email
+    response: Displaying emails...
+    consoleEvent: {fileID: 11400000, guid: 8a910bed39206c641b10b5570199154c, type: 2}
+  - command: help
+    response: Displaying commands...
+    consoleEvent: {fileID: 11400000, guid: 64c0bc89ff0afde4d980382e70cab63c, type: 2}
+  - command: clear
+    response: Clearing text...
+    consoleEvent: {fileID: 11400000, guid: 0a1533b9103a50b4eb777d05061d6150, type: 2}

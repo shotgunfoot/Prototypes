@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: DefaultComputerEmails
   m_EditorClassIdentifier: 
   emails:
-  - Command: Toast
-    Title: asfasf
-    Subject: asfasf
-    Contents: asfasfafs
+  - Command: cheers
+    Title: Celebrations!
+    Subject: Working Prototype
+    Contents: Congrats on the working prototypes! Editor window can still cause crashing...unsure
+      why though?
   - Command: ree
     Title: too many rees
     Subject: all the rees

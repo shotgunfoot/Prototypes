@@ -19,9 +19,13 @@ public class EmailsSO : ScriptableObject
     }
     [SerializeField] private List<Email> emails;
 
-    private void Awake() {
-        emails = new List<Email>();
-        CreateDummyEmail();
+    private void Awake()
+    {
+        if (emails.Count <= 0) //If there are no emails, generate a dummy
+        {
+            emails = new List<Email>();
+            CreateDummyEmail();
+        }
     }
 
     public List<Email> Emails { get { return emails; } }

@@ -12,9 +12,8 @@ using UnityEngine;
 public class ConsoleSystem : MonoBehaviour
 {
     private StringBuilder builder;
-    private string fluff = "";
 
-    public ComputerEventsSO ComputerEvents;
+    public ComputerEventSO ComputerEvents;
     public ConsoleOutput ConsoleOutput;
     public EmailsSO ComputerEmails;
 
@@ -27,72 +26,76 @@ public class ConsoleSystem : MonoBehaviour
 
     public void ValidateInput(string input)
     {
-        string lowerCase = input.ToLower();
-        builder.Append(fluff);
-        builder.Append(input).AppendLine();
-        if (ComputerEvents.CheckForEvent(lowerCase, builder))
-        {            
-            ConsoleOutput.ApplyToText(builder);            
-        }
-        else if (emailsMenuOpen)
+        if (!ConsoleOutput.isApplyingText)
         {
-            ComputerEmails.CheckForEmail(lowerCase, builder);
-            ConsoleOutput.ApplyToText(builder);
-        }
-        else
-        {
-            builder.Append("Unrecognized Command...Type Help to display all commands available").AppendLine();
-            ConsoleOutput.ApplyToText(builder);
+            string lowerCase = input.ToLower();
+
+            builder.Append(input).AppendLine();
+
+            if (ComputerEvents.CheckForEvent(lowerCase))
+            {
+                //SendToConsoleOutput();
+            }
+            else if (emailsMenuOpen)
+            {
+                ComputerEmails.CheckForEmail(lowerCase, builder);
+                SendToConsoleOutput();
+            }
+            else
+            {
+                builder.Append("Unrecognized Command...Type Help to display all commands available").AppendLine();
+                SendToConsoleOutput();
+            }
         }
     }
 
     public void Help()
     {
-        builder.Append(fluff);
-        builder.Append("Here are valid commands: ");
-
-        string lastKey = ComputerEvents.ComputerEvents.Last().ToString();
-
-        foreach (ComputerEventsSO.Event compEvent in ComputerEvents.ComputerEvents)
+        string lastKey = ComputerEvents.ComputerEvents.Last().command;        
+        foreach (ComputerEventSO.CompEvent CE in ComputerEvents.ComputerEvents)
         {
-            if (compEvent.Command != lastKey)
+            if (CE.command != lastKey)
             {
-                builder.Append(compEvent.Command.ToUpper() + ", ");
+                builder.Append(CE.command.ToLower() + ", ");
             }
             else
             {
-                builder.Append(lastKey.ToUpper());
+                builder.Append(lastKey.ToLower());
             }
         }
         builder.AppendLine();
 
-        ConsoleOutput.ApplyToText(builder);
+        SendToConsoleOutput();
 
-    }
-
-
-    public void ClearStringBuilder()
-    {
-        builder.Clear();
-        ConsoleOutput.ApplyToText(builder);
     }
 
     public void OpenEmailMenu()
     {
-
-        builder.Append(fluff);   
-
         foreach (EmailsSO.Email email in ComputerEmails.Emails)
         {
             builder.AppendFormat("{0} - {1} - {2} ", email.Command, email.Title, email.Subject).AppendLine();
         }
-        ConsoleOutput.ApplyToText(builder);
+        SendToConsoleOutput();
         emailsMenuOpen = true;
     }
 
     public void OpenMainMenu()
     {
         emailsMenuOpen = false;
+    }
+
+//BUG ISSUE
+//This isn't ?thread safe? If thats the correct term.
+//At no point am I checking ot see if the coroutine being called is already running, therefore it will attempt to hijack the 
+//string builders in use and cause a horrific never ending while loop.
+
+//Current fix: Careful where I am calling this method. The problem with that is its screwing over when events have a respone to add to the builder and when the 
+//event is raised it also wants to add to the stringbuilder.
+
+//Possible solution: 
+    private void SendToConsoleOutput()
+    {
+        ConsoleOutput.ApplyToText(builder);        
     }
 
 }
