@@ -32,18 +32,18 @@ public class ConsoleSystem : MonoBehaviour
 
             builder.Append(input).AppendLine();
 
-            ComputerEvents.CheckForEvent(lowerCase, builder);
-
             if (emailsMenuOpen)
             {
                 ComputerEmails.CheckForEmail(lowerCase, builder);
                 SendToConsoleOutput();
             }
-            else
+            else if (!ComputerEvents.CheckForEvent(lowerCase, builder))
             {
                 builder.Append("Unrecognized Command...Type Help to display all commands available").AppendLine();
                 SendToConsoleOutput();
             }
+
+
         }
     }
 
@@ -91,6 +91,7 @@ public class ConsoleSystem : MonoBehaviour
     //event is raised it also wants to add to the stringbuilder.
 
     //Possible solution: 
+    //Make them stack, whenever we call apply to text send it to the top and only let it run when the first coroutine is finished.
     private void SendToConsoleOutput()
     {
         ConsoleOutput.ApplyToText(builder);

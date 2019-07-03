@@ -21,13 +21,13 @@ public class ComputerEventSO : ScriptableObject
     public bool CheckForEvent(string lowerCase, StringBuilder builder)
     {
         builder.AppendLine();
-        foreach (CompEvent ev in ComputerEvents)
+        foreach (CompEvent ce in ComputerEvents)
         {
-            if (lowerCase == ev.command)
+            if (lowerCase == ce.command)
             {
-                builder.Append("Executing command : " + ev.command).AppendLine();
-                builder.Append(ev.response).AppendLine();
-                ev.consoleEvent.Raise();
+                builder.Append("Executing command : " + ce.command).AppendLine();
+                builder.Append(ce.response).AppendLine();
+                ce.consoleEvent.Raise();
                 return true;
             }
         }

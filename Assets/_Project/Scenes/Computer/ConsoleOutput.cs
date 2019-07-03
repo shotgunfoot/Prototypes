@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
 
 /*
     Class: ConsoleOutput
@@ -52,7 +53,7 @@ public class ConsoleOutput : MonoBehaviour
                 console.text = localBuilder.ToString();
                 ForceToBottom();
                 i = _builder.Length + 1;
-                cInput.InputField.text = "";       
+                cInput.InputField.text = "";
             }
 
             yield return null;

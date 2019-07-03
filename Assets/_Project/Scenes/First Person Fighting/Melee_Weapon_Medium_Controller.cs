@@ -17,9 +17,8 @@ using UnityEngine;
         -if player lets go of swing before full buildup then go back to idle anim slowly (the cost of a fake out is slow progression back to idle)
         -if player holds swing then releases, do a full swing animation (if player hits something then make it bounce back quicker, a miss takes longer). Think Dark Souls.
  */
-public class Melee_Weapon_Medium_Controller : MonoBehaviour
+public class Melee_Weapon_Medium_Controller : WieldableObject
 {
-
     [SerializeField] private Animator playerAnim;
     [SerializeField] private float windUpTimeRequired = .8f;
     [SerializeField] private float timeBetweenSwings = 2f;
@@ -38,8 +37,8 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
     private float timeSinceLastSwing = 0f;
     private bool swinging = false;
     private float animDirection;
-
     private CameraShaker shaker;
+    private Vector2 swingDirection;
 
     private void Start()
     {
@@ -48,42 +47,45 @@ public class Melee_Weapon_Medium_Controller : MonoBehaviour
     }
 
     private void Update()
-    {    
+    {            
 
-        animDirection = Input.GetAxis("Horizontal");
+        // if (!swinging)
+        // {
+        //     if (Input.GetButtonDown("LeftHand"))
+        //     {
+        //         //Play swinging animation based on movement direction
+        //         swingDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        //         animDirection = Input.GetAxis("Horizontal");
+        //         windUpTime = 0;
+        //         idling = 0;                
+        //     }
 
-        if (!swinging)
-        {
-            if (Input.GetButtonDown("LeftHand"))
-            {
-                windUpTime = 0;
-                idling = 0;
-            }
+        //     if (Input.GetButton("LeftHand"))
+        //     {
+        //         //begin wind up and play build up anim
+        //         windUpTime += Time.deltaTime * transitionScale;
+        //         idling += Time.deltaTime * transitionScale * 2;
+        //     }
+        //     else
+        //     {
+        //         //unwind and go back to idle anim
+        //         windUpTime -= Time.deltaTime * transitionScale;
+        //         idling -= Time.deltaTime * transitionScale * 2;
+        //     }
 
-            if (Input.GetButton("LeftHand"))
-            {
-                //begin wind up and play build up anim
-                windUpTime += Time.deltaTime * transitionScale;
-                idling += Time.deltaTime * transitionScale * 2;
-            }
-            else
-            {
-                //unwind and go back to idle anim
-                windUpTime -= Time.deltaTime * transitionScale;
-                idling -= Time.deltaTime * transitionScale * 2;
-            }
+        //     if (Input.GetButtonUp("LeftHand") && windUpTime >= windUpTimeRequired)
+        //     {                
+        //         FigureOutWhichSwing(swingDirection);
 
-            if (Input.GetButtonUp("LeftHand") && windUpTime >= windUpTimeRequired)
-            {
+        //     }
+        // }        
+        // idling = Mathf.Clamp01(idling);
+        // UpdateAnimParams();        
+    }
 
-                //Play swinging animation based on movement direction
-                Vector2 direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-                FigureOutWhichSwing(direction);
-
-            }
-        }        
-        idling = Mathf.Clamp01(idling);
-        UpdateAnimParams();
+    public override void ObjectAction(){
+        Shake(overHeadShake);
+        Debug.Log("Shaking!");
     }
 
     private void Shake(Vector3 direction)

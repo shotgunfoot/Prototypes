@@ -135,6 +135,7 @@ public class Hand : MonoBehaviour
                 coll.enabled = true;
             }
             EquippedObject.transform.SetParent(null);
+            EquippedObject.GetComponent<IOnDropAction>().OnDropAction();
             EquippedObject = null;
         }
     }

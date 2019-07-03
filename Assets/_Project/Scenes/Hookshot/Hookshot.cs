@@ -57,8 +57,7 @@ public class Hookshot : WieldableObject
 
     public override void OnPickUpAction()
     {
-        player = GetComponentInParent<PlayerMovementController>().transform;
-        
+        player = GetComponentInParent<PlayerMovementController>().transform;        
     }
 
     private IEnumerator FiringHookshot()

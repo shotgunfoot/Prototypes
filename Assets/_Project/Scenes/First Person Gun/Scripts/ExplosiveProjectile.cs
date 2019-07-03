@@ -13,6 +13,9 @@ public class ExplosiveProjectile : MonoBehaviour
     public float ShakeRoughness;
     public float ShakeFadeIn;
     public float ShakeFadeOut;
+    public float ExplosionRadius;
+    public float ExplosionForce;
+    public float LaunchModifier;
 
     private bool spawnedExplosive = false;
 
@@ -43,6 +46,19 @@ public class ExplosiveProjectile : MonoBehaviour
             CameraShaker.Instance.ShakeOnce(ShakeMagnitude, ShakeRoughness, ShakeFadeIn, ShakeFadeOut);
             Destroy(explosive, 5f);
             Destroy(gameObject, 5f);
+        }
+
+        Collider[] colls = Physics.OverlapSphere(transform.position, ExplosionRadius);
+
+        foreach(Collider coll in colls)
+        {
+            Rigidbody rb = coll.GetComponent<Rigidbody>();
+            if(rb != null)
+            {
+                Vector3 direction = coll.transform.position - transform.position;
+                float distance = Vector3.Distance(coll.transform.position, transform.position);
+                rb.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius, LaunchModifier, ForceMode.Impulse);
+            }
         }
     }
 }

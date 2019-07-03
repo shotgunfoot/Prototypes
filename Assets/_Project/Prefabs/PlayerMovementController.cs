@@ -199,7 +199,7 @@ public class PlayerMovementController : MonoBehaviour
 
     private void UpdateAnimator()
     {
-        anim.SetBool("Crouch", crouching);
+        //anim.SetBool("Crouch", crouching);
     }
 
     void Update()
