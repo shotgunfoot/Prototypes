@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [CreateAssetMenu(fileName ="WeaponProperties", menuName ="Weapons/Properties")]
 public class WeaponProperties : ScriptableObject
