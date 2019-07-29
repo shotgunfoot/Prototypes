@@ -235,6 +235,7 @@ namespace AmplifyShaderEditor
 		public static GUIStyle BoldWarningStyle;
 		public static GUIStyle BoldInfoStyle;
 		public static GUIStyle Separator;
+		public static GUIStyle ToolbarMainTitle;
 		public static GUIStyle ToolbarSearchTextfield;
 		public static GUIStyle ToolbarSearchCancelButton;
 		public static GUIStyle MiniButtonTopLeft;
@@ -390,7 +391,10 @@ namespace AmplifyShaderEditor
 			"UNITY_PASS_FORWARDBASE",
 			"UNITY_PASS_FORWARDADD",
 			"UNITY_PASS_DEFERRED",
-			"UNITY_PASS_SHADOWCASTER"
+			"UNITY_PASS_SHADOWCASTER",
+			"UNITY_INSTANCING_ENABLED",
+			"DIRECTIONAL_COOKIE"
+
 		};
 
 		public static readonly string[] CategoryPresets =
@@ -558,6 +562,8 @@ namespace AmplifyShaderEditor
 			{ ToolButtonType.Options,          new List<string>() { "Open Options menu." } },
 			{ ToolButtonType.Update,           new List<string>() { "Open or create a new shader first.", "Click to enable to update current shader.", "Shader up-to-date." } },
 			{ ToolButtonType.Live,             new List<string>() { "Open or create a new shader first.", "Click to enable live shader preview", "Click to enable live shader and material preview." , "Live preview active, click to disable." } },
+			{ ToolButtonType.TakeScreenshot,   new List<string>() { "Take screenshot", "Take screenshot" }},
+			{ ToolButtonType.Share,            new List<string>() { "Share selection", "Share selection" }},
 			{ ToolButtonType.CleanUnusedNodes, new List<string>() { "No unconnected nodes to clean.", "Remove all nodes not connected( directly or indirectly) to the master node." }},
 			{ ToolButtonType.Help,             new List<string>() { "Show help window." } },
 			{ ToolButtonType.FocusOnMasterNode,new List<string>() { "Focus on active master node." } },
@@ -807,6 +813,7 @@ namespace AmplifyShaderEditor
 			BoldWarningStyle = null;
 			BoldInfoStyle = null;
 			Separator = null;
+			ToolbarMainTitle = null;
 
 			GraphButtonIcon = null;
 			GraphButton = null;
@@ -951,6 +958,7 @@ namespace AmplifyShaderEditor
 			BoldInfoStyle.normal.textColor = Color.white;
 			BoldInfoStyle.alignment = TextAnchor.MiddleCenter;
 
+			ToolbarMainTitle = new GUIStyle( MainSkin.customStyles[ (int)CustomStyle.MainCanvasTitle ] );
 			Separator = new GUIStyle( MainSkin.customStyles[ (int)CustomStyle.FlatBackground ] );
 			MiniButtonTopLeft = new GUIStyle( MainSkin.customStyles[ (int)CustomStyle.MiniButtonTopLeft ] );
 			MiniButtonTopMid = new GUIStyle( MainSkin.customStyles[ (int)CustomStyle.MiniButtonTopMid ] );
@@ -1176,6 +1184,8 @@ namespace AmplifyShaderEditor
 			MiniSamplerButton.fontSize = (int)( 8 * drawInfo.InvertedZoom );
 
 			InternalDataOnPort.fontSize = (int)( 8 * drawInfo.InvertedZoom );
+			ToolbarMainTitle.padding.left = 0;
+			ToolbarMainTitle.padding.right = 0;
 
 			CheckNullMaterials();
 		}
@@ -1745,8 +1755,16 @@ namespace AmplifyShaderEditor
 			return WirePortDataType.FLOAT;
 		}
 
-		public static string GenerateUniformName( WirePortDataType dataType, string dataName ) { return string.Format( Constants.UniformDec, WirePortToCgType( dataType ), dataName ); }
-		public static string GenerateUniformName( string dataType, string dataName ) { return string.Format( Constants.UniformDec, dataType, dataName ); }
+		public static string GenerateUniformName( bool excludeUniformKeyword, WirePortDataType dataType, string dataName )
+		{
+			return GenerateUniformName( excludeUniformKeyword, WirePortToCgType( dataType ), dataName );
+		}
+
+		public static string GenerateUniformName( bool excludeUniformKeyword, string dataType, string dataName )
+		{
+			int index = excludeUniformKeyword ? 1 : 0;
+			return string.Format( Constants.UniformDec[index], dataType, dataName );
+		}
 
 		public static string GeneratePropertyName( string name, PropertyType propertyType, bool forceUnderscore = false )
 		{
@@ -1764,21 +1782,21 @@ namespace AmplifyShaderEditor
 
 			return name;
 		}
-
+		
 		public static string UrlReplaceInvalidStrings( string originalString )
 		{
-			foreach( KeyValuePair<string, string> kvp in Constants.UrlReplacementStringValues )
+			for( int i = 0; i < Constants.UrlReplacementStringValuesLen; i++ )
 			{
-				originalString = originalString.Replace( kvp.Key, kvp.Value );
+				originalString = originalString.Replace( Constants.UrlReplacementStringValues[i,0], Constants.UrlReplacementStringValues[i,1] );
 			}
 			return originalString;
 		}
 
 		public static string ReplaceInvalidStrings( string originalString )
 		{
-			foreach( KeyValuePair<string, string> kvp in Constants.ReplacementStringValues )
+			for(int i = 0; i< Constants.ReplacementStringValuesLen;i++ )
 			{
-				originalString = originalString.Replace( kvp.Key, kvp.Value );
+				originalString = originalString.Replace( Constants.ReplacementStringValues[i,0], Constants.ReplacementStringValues[ i, 1 ] );
 			}
 			return originalString;
 		}

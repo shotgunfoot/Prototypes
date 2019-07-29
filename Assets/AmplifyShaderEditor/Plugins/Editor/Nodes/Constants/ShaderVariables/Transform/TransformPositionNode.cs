@@ -23,19 +23,25 @@ namespace AmplifyShaderEditor
 		[SerializeField]
 		private InverseTangentType m_inverseTangentType = InverseTangentType.Fast;
 
+		[SerializeField]
+		private bool m_absoluteWorldPos = true;
+
+		private const string AbsoluteWorldPosStr = "Absolute";
+
 		private string InverseTBNStr = "Inverse TBN";
 
 		private const string AseObjectToWorldPosVarName = "objToWorld";
 		private const string AseObjectToWorldPosFormat = "mul( unity_ObjectToWorld, float4( {0}, 1 ) ).xyz";
 		private const string AseHDObjectToWorldPosFormat = "mul( GetObjectToWorldMatrix(), float4( {0}, 1 ) ).xyz";
-
+		private const string ASEHDAbsoluteWordPos = "GetAbsolutePositionWS({0})";
+		private const string ASEHDRelaviveCameraPos = "GetCameraRelativePositionWS({0})";
 		private const string AseObjectToViewPosVarName = "objToView";
 		private const string AseObjectToViewPosFormat = "mul( UNITY_MATRIX_MV, float4( {0}, 1 ) ).xyz";
 		private const string AseHDObjectToViewPosFormat = "TransformWorldToView( TransformObjectToWorld({0}) )";
 
 		private const string AseWorldToObjectPosVarName = "worldToObj";
 		private const string AseWorldToObjectPosFormat = "mul( unity_WorldToObject, float4( {0}, 1 ) ).xyz";
-		private const string AseHDWorldToObjectPosFormat = "mul( GetWorldToObjectMatrix(), float4( {0}, 1 ) ).xyz";
+		private const string AseSRPWorldToObjectPosFormat = "mul( GetWorldToObjectMatrix(), float4( {0}, 1 ) ).xyz";
 
 
 		private const string AseWorldToViewPosVarName = "worldToView";
@@ -61,6 +67,7 @@ namespace AmplifyShaderEditor
 		private const string AseViewToClipPosFormat = "mul(UNITY_MATRIX_P, float4({0}, 1.0))";
 		private const string AseSRPViewToClipPosFormat = "TransformWViewToHClip({0})";
 		//
+
 		private const string AseClipToObjectPosVarName = "clipToObject";
 		private const string AseClipToObjectPosFormat = "mul( UNITY_MATRIX_IT_MV, mul( unity_CameraInvProjection,float4({0},1)) ).xyz";
 		private const string AseHDClipToObjectPosFormat = "mul( UNITY_MATRIX_I_M, mul( UNITY_MATRIX_I_VP,float4({0},1)) ).xyz";
@@ -87,6 +94,7 @@ namespace AmplifyShaderEditor
 		private const string AseTangentToClipPosVarName = "tangentToClipPos";
 		private const string ASEMulOpFormat = "mul( {0}, {1} )";
 
+		
 		///////////////////////////////////////////////////////////
 		private const string FromStr = "From";
 		private const string ToStr = "To";
@@ -138,6 +146,12 @@ namespace AmplifyShaderEditor
 			{
 				m_perspectiveDivide = EditorGUILayoutToggle( PerpectiveDivideStr, m_perspectiveDivide );
 			}
+
+			//if( m_containerGraph.IsHDRP && ( m_from == TransformSpace.Object && m_to == TransformSpace.World ) ||
+			//	( m_from == TransformSpace.World && m_to == TransformSpace.Object ) )
+			//{
+			//	m_absoluteWorldPos = EditorGUILayoutToggle( AbsoluteWorldPosStr, m_absoluteWorldPos );
+			//}
 		}
 
 		void CalculateTransform( TransformSpace from, TransformSpace to, ref MasterNodeDataCollector dataCollector, ref string varName, ref string result )
@@ -152,10 +166,24 @@ namespace AmplifyShaderEditor
 						case TransformSpace.Object: break;
 						case TransformSpace.World:
 						{
-							if( dataCollector.IsTemplate && dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.HD )
-								result = string.Format( AseHDObjectToWorldPosFormat, result );
+							if( dataCollector.IsTemplate  && dataCollector.IsSRP )
+							{
+								if( dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.HD )
+								{
+									result = string.Format( AseHDObjectToWorldPosFormat, result );
+									if( m_absoluteWorldPos )
+									{
+										result = string.Format( ASEHDAbsoluteWordPos, result );
+									}
+								}else  if( dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.Lightweight )
+								{
+									result = string.Format( AseHDObjectToWorldPosFormat, result );
+								}
+							}
 							else
 								result = string.Format( AseObjectToWorldPosFormat, result );
+
+							
 							varName = AseObjectToWorldPosVarName + OutputId;
 						}
 						break;
@@ -190,8 +218,21 @@ namespace AmplifyShaderEditor
 					{
 						case TransformSpace.Object:
 						{
-							if( dataCollector.IsTemplate && dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.HD )
-								result = string.Format( AseHDWorldToObjectPosFormat, result );
+							if( dataCollector.IsTemplate && dataCollector.IsSRP )
+							{
+								if( dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.HD )
+								{
+									if( m_absoluteWorldPos )
+									{
+										result = string.Format( ASEHDRelaviveCameraPos, result );
+									}
+									result = string.Format( AseSRPWorldToObjectPosFormat, result );
+								}else if( dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.Lightweight )
+								{
+									result = string.Format( AseSRPWorldToObjectPosFormat, result );
+								}
+
+							}
 							else
 								result = string.Format( AseWorldToObjectPosFormat, result );
 							varName = AseWorldToObjectPosVarName + OutputId;
@@ -315,6 +356,8 @@ namespace AmplifyShaderEditor
 		{
 			if( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
 				return GetOutputVectorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory ) );
+
+			GeneratorUtils.RegisterUnity2019MatrixDefines( ref dataCollector );
 
 			string result = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 			string varName = string.Empty;
@@ -526,6 +569,10 @@ namespace AmplifyShaderEditor
 			{
 				m_inverseTangentType = (InverseTangentType)Enum.Parse( typeof( InverseTangentType ), GetCurrentParam( ref nodeParams ) );
 			}
+			if( UIUtils.CurrentShaderVersion() > 16103 )
+			{
+				m_absoluteWorldPos = Convert.ToBoolean( GetCurrentParam( ref nodeParams ) );
+			}
 			UpdateSubtitle();
 		}
 
@@ -536,6 +583,7 @@ namespace AmplifyShaderEditor
 			IOUtils.AddFieldValueToString( ref nodeInfo, m_to );
 			IOUtils.AddFieldValueToString( ref nodeInfo, m_perspectiveDivide );
 			IOUtils.AddFieldValueToString( ref nodeInfo, m_inverseTangentType );
+			IOUtils.AddFieldValueToString( ref nodeInfo, m_absoluteWorldPos );
 		}
 	}
 }

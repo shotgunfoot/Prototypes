@@ -62,6 +62,7 @@ public class PlayerMovementController : MonoBehaviour
     private Vector3 contactPoint;
     private bool playerControl = false;
     private int jumpTimer;
+    [SerializeField]
     private bool canMove = true;
     private PlayerInput pInput;
 
@@ -224,7 +225,7 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     public void DisableMovement()
-    {
+    {        
         canMove = false;
     }
 

@@ -9,6 +9,12 @@ using System.Collections.Generic;
 
 namespace AmplifyShaderEditor
 {
+	public enum CustomTemplatePropertyUIEnum
+	{
+		None,
+		HDPBR
+	}
+
 	public enum TemplateSemantics
 	{
 		NONE,
@@ -37,14 +43,18 @@ namespace AmplifyShaderEditor
 		TANGENT,
 		VFACE,
 		SV_VertexID,
-		SV_PrimitiveID
+		SV_PrimitiveID,
+		SV_InstanceID,
+		INTERNALTESSPOS
 	}
 
 	public enum TemplateInfoOnSematics
 	{
 		NONE,
 		POSITION,
+		CLIP_POS,
 		SCREEN_POSITION,
+		SCREEN_POSITION_NORMALIZED,
 		COLOR,
 		TEXTURE_COORDINATES0,
 		TEXTURE_COORDINATES1,
@@ -62,6 +72,7 @@ namespace AmplifyShaderEditor
 		WORLD_VIEW_DIR,
 		WORLD_POSITION,
 		RELATIVE_WORLD_POS,
+		INSTANCE_ID,
 		OTHER
 	}
 
@@ -217,6 +228,11 @@ namespace AmplifyShaderEditor
 			OffsetFactorInlineValue = string.Empty;
 			OffsetUnitsInlineValue = string.Empty;
 		}
+
+		public void SetDataCheck()
+		{
+			DataCheck = ( ValidZWrite || ValidZTest || ValidOffset )?TemplateDataCheck.Valid:TemplateDataCheck.Invalid;
+		}
 	}
 
 	[Serializable]
@@ -340,31 +356,53 @@ namespace AmplifyShaderEditor
 		public AvailableBlendOps BlendOpAlpha = AvailableBlendOps.OFF;
 		public string BlendOpAlphaInline;
 		public int BlendOpStartIndex;
+
+		public bool IndependentAlphaToMask = false;
+		public bool ValidAlphaToMask = false;
+		public bool AlphaToMaskValue = false;
+		public string AlphaToMaskId;
+
 		public override void SetAllModulesDefault()
 		{
 			base.SetAllModulesDefault();
-			ValidBlendMode = true;
-			BlendModeOff = true;
-			BlendModeId = string.Empty;
-			SeparateBlendFactors = false;
-			SourceFactorRGB = AvailableBlendFactor.One;
-			SourceFactorRGBInline = string.Empty;
-			DestFactorRGB = AvailableBlendFactor.Zero;
-			DestFactorRGBInline = string.Empty;
-			BlendModeStartIndex = -1;
-			SourceFactorAlpha = AvailableBlendFactor.One;
-			SourceFactorAlphaInline = string.Empty;
-			DestFactorAlpha = AvailableBlendFactor.Zero;
-			DestFactorAlphaInline = string.Empty;
 
-			ValidBlendOp = true;
-			BlendOpId = string.Empty;
-			SeparateBlendOps = false;
-			BlendOpRGB = AvailableBlendOps.OFF;
-			BlendOpRGBInline = string.Empty;
-			BlendOpAlpha = AvailableBlendOps.OFF;
-			BlendOpAlphaInline = string.Empty;
-			BlendOpStartIndex = -1;
+			if( !ValidAlphaToMask )
+			{
+				ValidAlphaToMask = true;
+				AlphaToMaskValue = false;
+				AlphaToMaskId = string.Empty;
+			}
+
+			if( !ValidBlendMode )
+			{
+				ValidBlendMode = true;
+				BlendModeOff = true;
+				BlendModeId = string.Empty;
+				SeparateBlendFactors = false;
+				SourceFactorRGB = AvailableBlendFactor.One;
+				SourceFactorRGBInline = string.Empty;
+				DestFactorRGB = AvailableBlendFactor.Zero;
+				DestFactorRGBInline = string.Empty;
+				BlendModeStartIndex = -1;
+				SourceFactorAlpha = AvailableBlendFactor.One;
+				SourceFactorAlphaInline = string.Empty;
+				DestFactorAlpha = AvailableBlendFactor.Zero;
+				DestFactorAlphaInline = string.Empty;
+			}
+
+			if( !ValidBlendOp )
+			{
+				ValidBlendOp = true;
+				BlendOpId = string.Empty;
+				SeparateBlendOps = false;
+				BlendOpRGB = AvailableBlendOps.OFF;
+				BlendOpRGBInline = string.Empty;
+				BlendOpAlpha = AvailableBlendOps.OFF;
+				BlendOpAlphaInline = string.Empty;
+				BlendOpStartIndex = -1;
+			}
+
+			DataCheck = TemplateDataCheck.Valid;
 		}
 
 	}
@@ -424,6 +462,12 @@ namespace AmplifyShaderEditor
 
 		public static string[] VectorSwizzle = { "x", "y", "z", "w" };
 		public static string[] ColorSwizzle = { "r", "g", "b", "a" };
+
+		public static readonly Dictionary<string, CustomTemplatePropertyUIEnum> CustomTemplatePropertyUI = new Dictionary<string, CustomTemplatePropertyUIEnum>
+		{
+			{ "None", CustomTemplatePropertyUIEnum.None},
+			{ "HDPBR", CustomTemplatePropertyUIEnum.HDPBR}
+		};
 
 		public static readonly Dictionary<string, InvisibleOptionsEnum> InvisibleOptions = new Dictionary<string, InvisibleOptionsEnum>()
 		{
@@ -506,6 +550,7 @@ namespace AmplifyShaderEditor
 			{TemplateSemantics.VFACE			,"ase_vface"},
 			{TemplateSemantics.SV_VertexID		,"ase_vertexId"},
 			{TemplateSemantics.SV_PrimitiveID   ,"ase_primitiveId"},
+			{TemplateSemantics.INTERNALTESSPOS  ,"ase_internalTessPos"},
 			{TemplateSemantics.TEXCOORD0		,"ase_tex_coord0"},
 			{TemplateSemantics.TEXCOORD1		,"ase_tex_coord1"},
 			{TemplateSemantics.TEXCOORD2		,"ase_tex_coord2"},
@@ -539,12 +584,17 @@ namespace AmplifyShaderEditor
 		public static readonly Dictionary<string, TemplateInfoOnSematics> ShortcutToInfo = new Dictionary<string, TemplateInfoOnSematics>
 		{
 			{"p"    ,TemplateInfoOnSematics.POSITION },
-			{"sp"   ,TemplateInfoOnSematics.SCREEN_POSITION },
+			{"sp"   ,TemplateInfoOnSematics.CLIP_POS },
+			{"spn"   ,TemplateInfoOnSematics.SCREEN_POSITION_NORMALIZED },
 			{"c"    ,TemplateInfoOnSematics.COLOR },
 			{"uv0"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES0 },
 			{"uv1"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES1 },
 			{"uv2"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES2 },
 			{"uv3"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES3 },
+			{"uv4"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES4 },
+			{"uv5"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES5 },
+			{"uv6"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES6 },
+			{"uv7"  ,TemplateInfoOnSematics.TEXTURE_COORDINATES7 },
 			{"n"    ,TemplateInfoOnSematics.NORMAL },
 			{"t"    ,TemplateInfoOnSematics.TANGENT },
 			{"wn"   ,TemplateInfoOnSematics.WORLD_NORMAL},
@@ -559,7 +609,9 @@ namespace AmplifyShaderEditor
 		public static readonly Dictionary<TemplateInfoOnSematics, string> InfoToLocalVar = new Dictionary<TemplateInfoOnSematics, string>
 		{
 			{TemplateInfoOnSematics.POSITION,GeneratorUtils.VertexPosition4Str },
+			{TemplateInfoOnSematics.CLIP_POS,GeneratorUtils.ClipPositionStr },
 			{TemplateInfoOnSematics.SCREEN_POSITION,GeneratorUtils.ScreenPositionStr },
+			{TemplateInfoOnSematics.SCREEN_POSITION_NORMALIZED,GeneratorUtils.ScreenPositionNormalizedStr },
 			{TemplateInfoOnSematics.COLOR, "ase_color" },
 			{TemplateInfoOnSematics.TEXTURE_COORDINATES0, "ase_uv0" },
 			{TemplateInfoOnSematics.TEXTURE_COORDINATES1, "ase_uv1" },
@@ -579,7 +631,9 @@ namespace AmplifyShaderEditor
 		public static readonly Dictionary<TemplateInfoOnSematics, WirePortDataType> InfoToWirePortType = new Dictionary<TemplateInfoOnSematics, WirePortDataType>
 		{
 			{TemplateInfoOnSematics.POSITION,WirePortDataType.FLOAT4 },
+			{TemplateInfoOnSematics.CLIP_POS,WirePortDataType.FLOAT4 },
 			{TemplateInfoOnSematics.SCREEN_POSITION,WirePortDataType.FLOAT4 },
+			{TemplateInfoOnSematics.SCREEN_POSITION_NORMALIZED,WirePortDataType.FLOAT4 },
 			{TemplateInfoOnSematics.COLOR, WirePortDataType.COLOR },
 			{TemplateInfoOnSematics.TEXTURE_COORDINATES0, WirePortDataType.FLOAT4 },
 			{TemplateInfoOnSematics.TEXTURE_COORDINATES1, WirePortDataType.FLOAT4 },
@@ -740,9 +794,12 @@ namespace AmplifyShaderEditor
 		public static string CoreCommonLib = "CoreRP/ShaderLibrary/Common.hlsl";
 		public static string CoreColorLib = "CoreRP/ShaderLibrary/Color.hlsl";
 #endif
+		public static string TemplateCustomUI = @"\/\*CustomNodeUI:(\w*)\*\/";
 		public static string HidePassPattern = @"\/\*ase_hide_pass[:]*([a-zA-Z:]*)\*\/";
+		public static string ASEPassPattern = @"\/\*ase_pass[:]*([a-zA-Z:]*)\*\/";
 		public static string BlendWholeWordPattern = @"\bBlend\b";
 		public static string BlendOpWholeWordPattern = @"\bBlendOp\b";
+		public static string ALphaToMaskPattern = @"\bAlphaToMask (\w*)";
 		public static string CullWholeWordPattern = @"\bCull\b";
 		public static string ColorMaskWholeWordPattern = @"\bColorMask\b";
 		public static string StencilWholeWordPattern = @"\bStencil\b";
@@ -753,11 +810,12 @@ namespace AmplifyShaderEditor
 
 
 		public static string CustomInspectorPattern = "^\\s*CustomEditor\\s+\\\"(\\w*)\\\"";
-		public static string FallbackPattern = "^\\s*Fallback\\s+\\\"(\\w*)\\\"";
+		public static string FallbackPattern = "^\\s*Fallback\\s+\\\"([\\w\\/\\\\]*)\\\"";
 		public static string DefinesPattern = @"^\s*#define\s+([\w .]*)";
 		public static string PragmasPattern = @"^\s*#pragma\s+([\w .]*)";
 		public static string IncludesPattern = "^\\s*#include\\s+\"([\\w.\\/]*)\"";
 		public static string GlobalDirectivesPattern = "[#]+(define|pragma|include)\\s+([\\w .\\/\\\"]*)";
+		public static string BeforePragmaPattern = @"(?:CGPROGRAM|HLSLPROGRAM|GLSLPROGRAM).*?\n(\s*)(.)";
 
 		public static string VertexPragmaPattern = @"#pragma vertex\s+(\w+)";
 		public static string FragmentPragmaPattern = @"#pragma fragment\s+(\w+)";
@@ -772,23 +830,23 @@ namespace AmplifyShaderEditor
 		public static readonly string PassNamePattern = "Name\\s+\\\"([\\w\\+\\-\\*\\/\\(\\) ]*)\\\"";
 
 		public static readonly string TagsPattern = "\"(\\w+)\"\\s*=\\s*\"(\\w+\\+*\\w*)\"";
-		public static readonly string ZTestPattern = @"\s*ZTest\s+(\[*\w+\]*)";
-		public static readonly string ZWritePattern = @"\s*ZWrite\s+(\[*\w+\]*)";
+		public static readonly string ZTestPattern = @"^\s*ZTest\s+(\[*\w+\]*)";
+		public static readonly string ZWritePattern = @"^\s*ZWrite\s+(\[*\w+\]*)";
 		//public static readonly string ZOffsetPattern = @"\s*Offset\s+([-+]?[0-9]*\.?[0-9]+)\s*,\s*([-+]?[0-9]*\.?[0-9]+)";
-		public static readonly string ZOffsetPattern = @"\s*Offset\s+([-+]?[0-9]*\.?[0-9]+|\[*\w+\]*)\s*,\s*([-+]?[0-9]*\.?[0-9]+|\[*\w+\]*)\s*";
+		public static readonly string ZOffsetPattern = @"^\s*Offset\s+([-+]?[0-9]*\.?[0-9]+|\[*\w+\]*)\s*,\s*([-+]?[0-9]*\.?[0-9]+|\[*\w+\]*)\s*";
 		public static readonly string VertexDataPattern = @"(\w+)\s*(\w+)\s*:\s*([A-Z0-9_]+);";
 		public static readonly string InterpRangePattern = @"ase_interp\((\d\.{0,1}\w{0,4}),(\d*)\)";
 		//public static readonly string PropertiesPatternB = "(\\w*)\\s*\\(\\s*\"([\\w ]*)\"\\s*\\,\\s*(\\w*)\\s*.*\\)";
 		//public static readonly string PropertiesPatternC = "^\\s*(\\w*)\\s*\\(\\s*\"([\\w\\(\\)\\+\\-\\\\* ]*)\"\\s*\\,\\s*(\\w*)\\s*.*\\)";
 		public static readonly string PropertiesPatternD = "(\\/\\/\\s*)*(\\w*)\\s*\\(\\s*\"([\\w\\(\\)\\+\\-\\\\* ]*)\"\\s*\\,\\s*(\\w*)\\s*.*\\)";
-		public static readonly string CullModePattern = @"\s*Cull\s+(\[*\w+\]*)";
-		public static readonly string ColorMaskPattern = @"\s*ColorMask\s+(\[*\w+\]*)";
+		public static readonly string CullModePattern = @"^\s*Cull\s+(\[*\w+\]*)";
+		public static readonly string ColorMaskPattern = @"^\s*ColorMask\s+(\[*\w+\]*)";
 		//public static readonly string BlendModePattern = @"\s*Blend\s+(\w+)\s+(\w+)(?:[\s,]+(\w+)\s+(\w+)|)";
 		//public static readonly string BlendModePattern = @"\s*Blend\s+(\[*\w+\]*)\s+(\[*\w+\]*)(?:[\s,]+(\[*\w+\]*)\s+(\[*\w+\]*)|)";
-		public static readonly string BlendModePattern = @"\s*Blend\s+(?:(?=\d)|(\[*\w+\]*)\s+(\[*\w+\]*)(?:[\s,]+(\[*\w+\]*)\s+(\[*\w+\]*)|))";
+		public static readonly string BlendModePattern = @"^\s*Blend\s+(?:(?=\d)|(\[*\w+\]*)\s+(\[*\w+\]*)(?:[\s,]+(\[*\w+\]*)\s+(\[*\w+\]*)|))";
 		//public static readonly string BlendOpPattern = @"\s*BlendOp\s+(\w+)[\s,]*(?:(\w+)|)";
 		//public static readonly string BlendOpPattern = @"\s*BlendOp\s+(\[*\w+\]*)[\s,]*(?:(\[*\w+\]*)|)";
-		public static readonly string BlendOpPattern = @"\s*BlendOp\s+(?:(?=\d)|(\[*\w+\]*)[\s,]*(?:(\[*\w+\]*)|))";
+		public static readonly string BlendOpPattern = @"^\s*BlendOp\s+(?:(?=\d)|(\[*\w+\]*)[\s,]*(?:(\[*\w+\]*)|))";
 
 		public static readonly string StencilOpGlobalPattern = @"Stencil\s*{([\w\W\s]*)}";
 		public static readonly string StencilOpLinePattern = @"(\w+)\s*(\[*\w+\]*)";
@@ -800,15 +858,45 @@ namespace AmplifyShaderEditor
 		public static readonly string TexFullSemantic = "float4 {0} : {1};";
 		public static readonly string InterpFullSemantic = "{0} {1} : {2};";
 		public static readonly string BaseInterpolatorName = "ase_texcoord";
+		public static readonly string TexUVFullSemantic = "float4 ase_texcoord{0} : TEXCOORD{0};";
 		public static readonly string InterpMacro = "{0}({1})";
 
 		public static readonly string InterpolatorDecl = Constants.VertexShaderOutputStr + ".{0} = " + Constants.VertexShaderInputStr + ".{0};";
 		public static readonly string TemplateVariableDecl = "{0} = {1};";
 		public static readonly string TemplateVarFormat = "{0}.{1}";
 
+		public static readonly string StructsRemoval = @"struct\s+\w+\s+{[\s\w;\/\*]+};";
+
 		public static string ReplaceAt( this string body, string oldStr, string newStr, int startIndex )
 		{
 			return body.Remove( startIndex, oldStr.Length ).Insert( startIndex, newStr );
+		}
+
+		public static bool GetPassUniqueId( TemplateTagData tagData, TemplatePropertyContainer propertyContainer, TemplateIdManager idManager, string uniquePrefix, int offsetIdx, string subBody, ref string  passUniqueID )
+		{
+			Match match = Regex.Match( subBody, ASEPassPattern );
+			if( match.Success && match.Groups.Count > 1 && match.Groups[1].Length > 0  )
+			{
+				passUniqueID = match.Groups[ 1 ].Value;
+
+				tagData.StartIdx = offsetIdx + match.Index;
+				tagData.Id = match.Value;
+
+				idManager.RegisterId( tagData.StartIdx, uniquePrefix + tagData.Id, tagData.Id );
+				propertyContainer.AddId( subBody, tagData.Id, tagData.SearchIndentation );
+				return true;
+			}
+			return false;
+		}
+
+		public static CustomTemplatePropertyUIEnum FetchCustomUI( string data )
+		{
+			Match match = Regex.Match( data, TemplateCustomUI );
+			if( match.Success && CustomTemplatePropertyUI.ContainsKey( match.Groups[ 1 ].Value ) )
+			{
+				return CustomTemplatePropertyUI[ match.Groups[ 1 ].Value ];
+			}
+			return CustomTemplatePropertyUIEnum.None;
 		}
 
 		public static bool FetchInvisibleInfo( string input, ref int optionsArr, ref string id, ref int idIndex )
@@ -913,6 +1001,9 @@ namespace AmplifyShaderEditor
 		{
 			int typeIdx = (int)TemplateShaderGlobalsIdx.Type;
 			int nameIdx = (int)TemplateShaderGlobalsIdx.Name;
+			
+			// removes structs
+			propertyData = Regex.Replace( propertyData, StructsRemoval, "" );
 			MatchCollection matchCollection = Regex.Matches( propertyData, ShaderGlobalsOverallPattern );
 			string value = ( matchCollection.Count > 0 ) ? matchCollection[ 0 ].Groups[ 0 ].Value : propertyData;
 			foreach( Match lineMatch in Regex.Matches( value, ShaderGlobalsMultilinePattern, RegexOptions.Multiline ) )
@@ -1610,6 +1701,18 @@ namespace AmplifyShaderEditor
 					vertexDataDict.Add( semantics, templateVertexData );
 				}
 			}
+
+			if( vertexData.Contains( Constants.InstanceIdMacro ) )
+			{
+				TemplateVertexData templateVertexData = new TemplateVertexData( TemplateSemantics.SV_InstanceID, WirePortDataType.UINT, Constants.InstanceIdVariable );
+				templateVertexData.DataInfo = TemplateInfoOnSematics.INSTANCE_ID;
+				templateVertexData.Available = true;
+				templateVertexData.ExcludeStructPrefix = true;
+
+				vertexDataList.Add( templateVertexData );
+				vertexDataDict.Add( TemplateSemantics.SV_InstanceID, templateVertexData );
+			}
+
 			if( !string.IsNullOrEmpty( parametersBody ) )
 			{
 				string[] paramsArray = parametersBody.Split( IOUtils.FIELD_SEPARATOR );
@@ -1718,6 +1821,16 @@ namespace AmplifyShaderEditor
 					}
 				}
 
+				if( interpData.Contains( Constants.InstanceIdMacro ) )
+				{
+					TemplateVertexData templateInterpData = new TemplateVertexData( TemplateSemantics.SV_InstanceID, WirePortDataType.UINT, Constants.InstanceIdVariable );
+					templateInterpData.DataInfo = TemplateInfoOnSematics.INSTANCE_ID;
+					templateInterpData.Available = true;
+					templateInterpData.ExcludeStructPrefix = true;
+					interpDataList.Add( templateInterpData );
+					interpDataDict.Add( TemplateSemantics.SV_InstanceID, templateInterpData );
+				}
+
 				Dictionary<string, TemplateVertexData> auxDict = new Dictionary<string, TemplateVertexData>();
 				// Get info for available interpolators
 				string[] paramsArray = parametersBody.Split( IOUtils.FIELD_SEPARATOR );
@@ -1821,7 +1934,6 @@ namespace AmplifyShaderEditor
 			}
 		}
 
-
 		public static void FetchCustomInspector( TemplateInfoContainer inspectorContainer, ref string body )
 		{
 			Match match = Regex.Match( body, CustomInspectorPattern, RegexOptions.Multiline );
@@ -1844,7 +1956,7 @@ namespace AmplifyShaderEditor
 
 		public static void FetchFallback( TemplateInfoContainer fallbackContainer, ref string body )
 		{
-			Match match = Regex.Match( body, FallbackPattern, RegexOptions.Multiline );
+			Match match = Regex.Match( body, FallbackPattern, RegexOptions.Multiline | RegexOptions.IgnoreCase );
 			if( match != null && match.Groups.Count > 1 )
 			{
 				fallbackContainer.Index = match.Index;
@@ -2032,7 +2144,14 @@ namespace AmplifyShaderEditor
 			string funcName;
 			if( dataCollector.IsTemplate && dataCollector.IsSRP )
 			{
-				funcName = "UnpackNormalmapRGorAG( {0}, " + scale + " )";
+				if( dataCollector.TemplateDataCollectorInstance.IsHDRP )
+				{
+					funcName = "UnpackNormalmapRGorAG( {0}, " + scale + " )";
+				}
+				else
+				{
+					funcName = "UnpackNormalScale( {0}, " + scale + " )";
+				}
 			}
 			else
 			{
@@ -2051,8 +2170,10 @@ namespace AmplifyShaderEditor
 			return false;
 		}
 
-		public static readonly string FetchDefaultDepthFormat = "UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture,UNITY_PROJ_COORD( {0} )))";
-		public static readonly string FetchLWDepthFormat = "tex2Dproj( _CameraDepthTexture, {0} ).r";
+	//	public static readonly string FetchDefaultDepthFormat = "UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture,UNITY_PROJ_COORD( {0} )))";
+		public static readonly string FetchDefaultDepthFormat = "SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture,UNITY_PROJ_COORD( {0} ))";
+
+		public static readonly string FetchLWDepthFormat = "SHADERGRAPH_SAMPLE_SCENE_DEPTH( {0}.xy/{0}.w  )";
 #if UNITY_2018_3_OR_NEWER
 		public static readonly string FetchHDDepthFormat = " SampleCameraDepth( {0}.xy/{0}.w ).r";
 #else
@@ -2073,6 +2194,19 @@ namespace AmplifyShaderEditor
 				screenDepthInstruction = string.Format( FetchDefaultDepthFormat, screenPos );
 			}
 			return screenDepthInstruction;
+		}
+
+		public static bool GetShaderModelForInterpolatorAmount( int interpAmount, ref string shaderModel )
+		{
+			for( int i = 0; i < AvailableShaderModels.Length; i++ )
+			{
+				if( AvailableInterpolators[ AvailableShaderModels[ i ] ] >= interpAmount )
+				{
+					shaderModel = AvailableShaderModels[ i ];
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

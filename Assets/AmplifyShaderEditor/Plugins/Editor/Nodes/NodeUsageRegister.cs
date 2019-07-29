@@ -20,6 +20,7 @@ namespace AmplifyShaderEditor
 	[Serializable] public class UsageListTemplateMultiPassMasterNodes : NodeUsageRegister<TemplateMultiPassMasterNode> { }
 	[Serializable] public class UsageListCustomExpressionsOnFunctionMode : NodeUsageRegister<CustomExpressionNode> { }
 	[Serializable] public class UsageListGlobalArrayNodes : NodeUsageRegister<GlobalArrayNode> { }
+	[Serializable] public class UsageListStaticSwitchNodes : NodeUsageRegister<StaticSwitch> { }
 
 	[Serializable]
 	public class NodeUsageRegister<T> where T : ParentNode

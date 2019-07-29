@@ -37,7 +37,7 @@ namespace AmplifyShaderEditor
 
 		private const string AseObjectToWorldDirVarName = "objToWorldDir";
 		private const string AseObjectToWorldDirFormat = "mul( unity_ObjectToWorld, float4( {0}, 0 ) ).xyz";
-		private const string AseHDObjectToWorldDirFormat = "mul( GetObjectToWorldMatrix(), float4( {0}, 0 ) ).xyz";
+		private const string AseSRPObjectToWorldDirFormat = "mul( GetObjectToWorldMatrix(), float4( {0}, 0 ) ).xyz";
 
 		private const string AseObjectToViewDirVarName = "objToViewDir";
 		private const string AseObjectToViewDirFormat = "mul( UNITY_MATRIX_IT_MV, float4( {0}, 0 ) ).xyz";
@@ -45,7 +45,7 @@ namespace AmplifyShaderEditor
 
 		private const string AseWorldToObjectDirVarName = "worldToObjDir";
 		private const string AseWorldToObjectDirFormat = "mul( unity_WorldToObject, float4( {0}, 0 ) ).xyz";
-		private const string AseHDWorldToObjectDirFormat = "mul( GetWorldToObjectMatrix(), float4( {0}, 0 ) ).xyz";
+		private const string AseSRPWorldToObjectDirFormat = "mul( GetWorldToObjectMatrix(), float4( {0}, 0 ) ).xyz";
 
 
 		private const string AseWorldToViewDirVarName = "worldToViewDir";
@@ -71,15 +71,16 @@ namespace AmplifyShaderEditor
 		private const string AseSRPViewToClipDirFormat = "mul(GetViewToHClipMatrix(), float4({0}, 1.0))";
 		//
 		private const string AseClipToObjectDirVarName = "clipToObjectDir";
+
 		private const string AseClipToObjectDirFormat = "mul( UNITY_MATRIX_IT_MV, mul( unity_CameraInvProjection,float4({0},0)) ).xyz";
+		private const string AseClipToWorldDirFormat = "mul( UNITY_MATRIX_I_V, mul( unity_CameraInvProjection,float4({0},0)) ).xyz";
+		private const string AseClipToViewDirFormat = " mul( unity_CameraInvProjection,float4({0},0)).xyz";
 		private const string AseHDClipToObjectDirFormat = "mul( UNITY_MATRIX_I_M, mul( UNITY_MATRIX_I_VP,float4({0},0)) ).xyz";
 
 		private const string AseClipToWorldDirVarName = "clipToWorldDir";
-		private const string AseClipToWorldDirFormat = "mul( UNITY_MATRIX_I_V, mul( unity_CameraInvProjection,float4({0},0)) ).xyz";
 		private const string AseHDClipToWorldDirFormat = "mul( UNITY_MATRIX_I_VP, float4({0},0) ).xyz";
 
 		private const string AseClipToViewDirVarName = "clipToViewDir";
-		private const string AseClipToViewDirFormat = " mul( unity_CameraInvProjection,float4({0},0)).xyz";
 		private const string AseHDClipToViewDirFormat = " mul( UNITY_MATRIX_I_P,float4({0},0)).xyz";
 		private const string AseClipToNDC = "{0}.xyz/{0}.w";
 		
@@ -159,8 +160,8 @@ namespace AmplifyShaderEditor
 						default: case TransformSpace.Object: break;
 						case TransformSpace.World:
 						{
-							if( dataCollector.IsTemplate && dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.HD )
-								result = string.Format( AseHDObjectToWorldDirFormat, result );
+							if( dataCollector.IsTemplate && dataCollector.TemplateDataCollectorInstance.CurrentSRPType != TemplateSRPType.BuiltIn )
+								result = string.Format( AseSRPObjectToWorldDirFormat, result );
 							else
 								result = string.Format( AseObjectToWorldDirFormat, result );
 							varName = AseObjectToWorldDirVarName + OutputId;
@@ -197,8 +198,8 @@ namespace AmplifyShaderEditor
 					{
 						case TransformSpace.Object:
 						{
-							if( dataCollector.IsTemplate && dataCollector.TemplateDataCollectorInstance.CurrentSRPType == TemplateSRPType.HD )
-								result = string.Format( AseHDWorldToObjectDirFormat, result );
+							if( dataCollector.IsTemplate && dataCollector.TemplateDataCollectorInstance.CurrentSRPType != TemplateSRPType.BuiltIn )
+								result = string.Format( AseSRPWorldToObjectDirFormat, result );
 							else
 								result = string.Format( AseWorldToObjectDirFormat, result );
 							varName = AseWorldToObjectDirVarName + OutputId;
@@ -319,8 +320,11 @@ namespace AmplifyShaderEditor
 			if( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
 				return GetOutputVectorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory ) );
 
+			GeneratorUtils.RegisterUnity2019MatrixDefines( ref dataCollector );
+
 			string result = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 			string varName = string.Empty;
+
 
 			switch( m_from )
 			{

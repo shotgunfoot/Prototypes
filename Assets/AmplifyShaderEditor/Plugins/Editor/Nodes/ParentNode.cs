@@ -27,6 +27,9 @@ namespace AmplifyShaderEditor
 	[Serializable]
 	public class ParentNode : UndoParentNode, ISerializationCallbackReceiver
 	{
+		public const int PreviewWidth = 128;
+		public const int PreviewHeight = 128;
+
 		protected readonly string[] PrecisionLabels = { "Float", "Half" };
 
 		private const double NodeClickTime = 0.2;
@@ -159,7 +162,7 @@ namespace AmplifyShaderEditor
 
 		[SerializeField]
 		protected int m_previewMaterialPassId = -1;
-
+		
 		protected bool m_useSquareNodeTitle = false;
 
 		// Error Box Messages
@@ -1778,7 +1781,7 @@ namespace AmplifyShaderEditor
 						}
 						else
 						{
-							if( m_containerGraph.ParentWindow.GlobalShowInternalData && !m_inputPorts[ i ].IsConnected && UIUtils.InternalDataOnPort.fontSize > 1f && ( m_inputPorts[ i ].AutoDrawInternalData || ( m_autoDrawInternalPortData && m_useInternalPortData ) ) && m_inputPorts[ i ].DisplayInternalData.Length > 4 )
+							if( m_containerGraph.ParentWindow.GlobalShowInternalData && !m_inputPorts[ i ].IsConnected && UIUtils.InternalDataOnPort.fontSize > 1f && ( m_inputPorts[ i ].AutoDrawInternalData || ( m_autoDrawInternalPortData && m_useInternalPortData ) ) && m_inputPorts[ i ].DisplayInternalData.Length > 4 && m_inputPorts[ i ].DataType != WirePortDataType.OBJECT )
 							{
 								GUI.color = Constants.NodeBodyColor/* * new Color( 1f, 1f, 1f, 0.75f )*/;
 								Rect internalBox = m_inputPorts[ i ].LabelPosition;
@@ -2489,7 +2492,6 @@ namespace AmplifyShaderEditor
 			return result;
 		}
 
-		
 		public virtual string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
 			if( dataCollector.IsSRP )
@@ -2794,10 +2796,24 @@ namespace AmplifyShaderEditor
 				OnUniqueIDAssigned();
 			}
 		}
-
-		public void SetBaseUniqueId( int uniqueId )
+		public void SetBaseUniqueId( int uniqueId, bool setOnPorts = false )
 		{
 			m_uniqueId = uniqueId;
+			if( setOnPorts )
+			{
+				int inputCount = m_inputPorts.Count;
+				int outputCount = m_outputPorts.Count;
+
+				for( int inputIdx = 0; inputIdx < inputCount; inputIdx++ )
+				{
+					m_inputPorts[ inputIdx ].NodeId = uniqueId;
+				}
+
+				for( int outputIdx = 0; outputIdx < outputCount; outputIdx++ )
+				{
+					m_outputPorts[ outputIdx ].NodeId = uniqueId;
+				}
+			}
 		}
 
 		public string OutputId
@@ -3252,6 +3268,26 @@ namespace AmplifyShaderEditor
 			}
 		}
 
+		public string GenerateErrorValue( int outputIdx = 0 )
+		{
+			switch( m_outputPorts[ outputIdx ].DataType )
+			{
+				case WirePortDataType.FLOAT2:
+				{
+					return "(0).xx";
+				}
+				case WirePortDataType.FLOAT3:
+				{
+					return "(0).xxx";
+				}
+				case WirePortDataType.FLOAT4:
+				case WirePortDataType.COLOR:
+				{
+					return "(0).xxxx";
+				}
+			}
+			return "0";
+		}
 
 		//Methods created to take into account new ports added on nodes newer versions
 		//This way we can convert connections from previous versions to newer ones and not brake shader graph
@@ -3281,7 +3317,7 @@ namespace AmplifyShaderEditor
 		public float TextLabelWidth { get { return m_textLabelWidth; } }
 		public bool IsMoving { get { return m_isMoving > 0; } }
 		public bool MovingInFrame { get { return m_movingInFrame; } set { m_movingInFrame = value; } }
-		public bool SizeIsDirty { get { return m_sizeIsDirty; } }
+		public bool SizeIsDirty { get { return m_sizeIsDirty; } set { m_sizeIsDirty = value; } }
 		public int Category { get { return m_category; } }
 		public int CommentaryParent
 		{
@@ -3347,7 +3383,7 @@ namespace AmplifyShaderEditor
 				if( i == 0 )
 				{
 					RenderTexture temp = RenderTexture.active;
-					RenderTexture beforeMask = RenderTexture.GetTemporary( 128, 128, 0, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear );
+					RenderTexture beforeMask = RenderTexture.GetTemporary( PreviewWidth, PreviewHeight, 0, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear );
 					RenderTexture.active = beforeMask;
 					Graphics.Blit( null, beforeMask, PreviewMaterial, m_previewMaterialPassId );
 

@@ -113,11 +113,13 @@ namespace AmplifyShaderEditor
 		}
 		public void AddHDLightInfo()
 		{
+#if !UNITY_2018_3_OR_NEWER
 			AddLateDirective( AdditionalLineType.Custom, "#if (SHADERPASS != SHADERPASS_FORWARD) //On forward this info is already included" );
 			AddLateDirective( AdditionalLineType.Include, "HDRP/Lighting/LightDefinition.cs.hlsl" );
 			AddLateDirective( AdditionalLineType.Include, "HDRP/Lighting/LightLoop/Shadow.hlsl" );
 			AddLateDirective( AdditionalLineType.Include, "HDRP/Lighting/LightLoop/LightLoopDef.hlsl" );
 			AddLateDirective( AdditionalLineType.Custom, "#endif // End of light info includes" );
+#endif
 		}
 
 		public void AddLateDirective( AdditionalLineType type, string value )
@@ -211,22 +213,26 @@ namespace AmplifyShaderEditor
 			}
 
 			m_availableFragData = new Dictionary<TemplateInfoOnSematics, InterpDataHelper>();
-			if( templateData.InterpolatorData != null && templateData.FragFunctionData != null )
+			if( templateData.InterpolatorData != null && templateData.FragmentFunctionData != null )
 			{
 				m_interpolatorData = new TemplateInterpData( templateData.InterpolatorData );
 				int fragCount = templateData.InterpolatorData.Interpolators.Count;
 				for( int i = 0; i < fragCount; i++ )
 				{
 					string varName = string.Empty;
-					if( templateData.InterpolatorData.Interpolators[ i ].IsSingleComponent )
+					if( templateData.InterpolatorData.Interpolators[ i ].ExcludeStructPrefix )
+					{
+						varName = templateData.InterpolatorData.Interpolators[ i ].VarName;
+					}
+					else if( templateData.InterpolatorData.Interpolators[ i ].IsSingleComponent )
 					{
 						varName = string.Format( TemplateHelperFunctions.TemplateVarFormat,
-													templateData.FragFunctionData.InVarName,
+													templateData.FragmentFunctionData.InVarName,
 													templateData.InterpolatorData.Interpolators[ i ].VarNameWithSwizzle );
 					}
 					else
 					{
-						varName = string.Format( templateData.InterpolatorData.Interpolators[ i ].VarNameWithSwizzle, templateData.FragFunctionData.InVarName );
+						varName = string.Format( templateData.InterpolatorData.Interpolators[ i ].VarNameWithSwizzle, templateData.FragmentFunctionData.InVarName );
 					}
 
 					m_availableFragData.Add( templateData.InterpolatorData.Interpolators[ i ].DataInfo,
@@ -236,17 +242,26 @@ namespace AmplifyShaderEditor
 				}
 			}
 
+
 			m_availableVertData = new Dictionary<TemplateInfoOnSematics, InterpDataHelper>();
 			if( templateData.VertexFunctionData != null && templateData.VertexDataList != null )
 			{
 				int vertCount = templateData.VertexDataList.Count;
 				for( int i = 0; i < vertCount; i++ )
 				{
+					string varName = string.Empty;
+					if( templateData.VertexDataList[ i ].ExcludeStructPrefix )
+					{
+						varName = templateData.VertexDataList[ i ].VarName;
+					}
+					else
+					{
+						varName = string.Format( TemplateHelperFunctions.TemplateVarFormat, templateData.VertexFunctionData.InVarName, templateData.VertexDataList[ i ].VarNameWithSwizzle );
+					}
+
 					m_availableVertData.Add( templateData.VertexDataList[ i ].DataInfo,
 					new InterpDataHelper( templateData.VertexDataList[ i ].SwizzleType,
-					string.Format( TemplateHelperFunctions.TemplateVarFormat,
-					templateData.VertexFunctionData.InVarName,
-					templateData.VertexDataList[ i ].VarNameWithSwizzle ),
+					varName,
 					templateData.VertexDataList[ i ].IsSingleComponent ) );
 				}
 			}
@@ -280,7 +295,7 @@ namespace AmplifyShaderEditor
 				RegisterVertexInputParams( WirePortDataType.UINT, PrecisionType.Float, TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.SV_VertexID ], TemplateSemantics.SV_VertexID );
 			}
 
-			if( m_currentDataCollector.PortCategory != MasterNodePortCategory.Vertex)
+			if( m_currentDataCollector.PortCategory != MasterNodePortCategory.Vertex )
 				RegisterCustomInterpolatedData( m_vertexInputParams[ TemplateSemantics.SV_VertexID ].Name, WirePortDataType.INT, PrecisionType.Float, m_vertexInputParams[ TemplateSemantics.SV_VertexID ].Name );
 
 			return m_vertexInputParams[ TemplateSemantics.SV_VertexID ].Name;
@@ -348,6 +363,17 @@ namespace AmplifyShaderEditor
 				m_currentDataCollector.AddLocalVariable( uniqueId, precisionType, WirePortDataType.FLOAT2, uvChannelName, string.Format( Constants.TilingOffsetFormat, uvName, propertyHelperVar + ".xy", propertyHelperVar + ".zw" ) );
 			}
 			return uvChannelName;
+		}
+
+		public string GetUV( int uvChannel, MasterNodePortCategory category = MasterNodePortCategory.Fragment, WirePortDataType size = WirePortDataType.FLOAT4 )
+		{
+			if( !HasUV( uvChannel ) )
+			{
+				RegisterUV( uvChannel, size );
+			}
+
+			InterpDataHelper info = ( category == MasterNodePortCategory.Fragment ) ? m_availableFragData[ TemplateHelperFunctions.IntToUVChannelInfo[ uvChannel ] ] : m_availableVertData[ TemplateHelperFunctions.IntToUVChannelInfo[ uvChannel ] ];
+			return info.VarName;
 		}
 
 		public InterpDataHelper GetUVInfo( int uvChannel )
@@ -430,7 +456,7 @@ namespace AmplifyShaderEditor
 					InterpDataHelper vertInfo = m_availableVertData[ TemplateHelperFunctions.IntToUVChannelInfo[ UVChannel ] ];
 					string interpDecl = string.Format( TemplateHelperFunctions.TemplateVariableDecl, interpVarName, TemplateHelperFunctions.AutoSwizzleData( vertInfo.VarName, vertInfo.VarType, size ) );
 					m_currentDataCollector.AddToVertexInterpolatorsDecl( interpDecl );
-					string finalVarName = m_currentTemplateData.FragFunctionData.InVarName + "." + availableInterp.VarNameWithSwizzle;
+					string finalVarName = m_currentTemplateData.FragmentFunctionData.InVarName + "." + availableInterp.VarNameWithSwizzle;
 					m_availableFragData.Add( TemplateHelperFunctions.IntToUVChannelInfo[ UVChannel ], new InterpDataHelper( size, finalVarName ) );
 					return finalVarName;
 				}
@@ -544,7 +570,7 @@ namespace AmplifyShaderEditor
 					string interpVarName = m_currentTemplateData.VertexFunctionData.OutVarName + "." + availableInterp.VarNameWithSwizzle;
 					string interpDecl = string.Format( TemplateHelperFunctions.TemplateVariableDecl, interpVarName, TemplateHelperFunctions.AutoSwizzleData( m_availableVertData[ info ].VarName, m_availableVertData[ info ].VarType, dataType ) );
 					m_currentDataCollector.AddToVertexInterpolatorsDecl( interpDecl );
-					string finalVarName = m_currentTemplateData.FragFunctionData.InVarName + "." + availableInterp.VarNameWithSwizzle;
+					string finalVarName = m_currentTemplateData.FragmentFunctionData.InVarName + "." + availableInterp.VarNameWithSwizzle;
 					m_availableFragData.Add( info, new InterpDataHelper( dataType, finalVarName ) );
 					return finalVarName;
 				}
@@ -609,6 +635,10 @@ namespace AmplifyShaderEditor
 			return null;
 		}
 
+		public bool HasRawInterpolatorOfName( string name )
+		{
+			return m_interpolatorData.HasRawInterpolatorOfName( name );
+		}
 
 		public TemplateVertexData RequestNewInterpolator( WirePortDataType dataType, bool isColor, string varName = null )
 		{
@@ -640,6 +670,33 @@ namespace AmplifyShaderEditor
 					}
 				}
 			}
+
+			// This area is reached if max available interpolators from shader model is reached 
+			// Nevertheless, we register all new interpolators to that list so no imediate compilation errors are thrown
+			// A warning message is then thrown to warn the user about this
+			int newInterpId = 1 + TemplateHelperFunctions.SemanticToInt[ m_interpolatorData.AvailableInterpolators[ m_interpolatorData.AvailableInterpolators.Count - 1 ].Semantic ];
+			if( TemplateHelperFunctions.IntToSemantic.ContainsKey( newInterpId ) )
+			{
+				TemplateInterpElement item = new TemplateInterpElement( TemplateHelperFunctions.IntToSemantic[ newInterpId ] );
+				m_interpolatorData.AvailableInterpolators.Add( item );
+				TemplateVertexData data = item.RequestChannels( dataType, isColor, varName );
+				if( data != null )
+				{
+					if( !m_registeredVertexData.ContainsKey( data.VarName ) )
+					{
+						m_registeredVertexData.Add( data.VarName, data );
+					}
+
+					if( item.Usage == 1 )
+					{
+						string interpolator = string.Format( TemplateHelperFunctions.TexFullSemantic, data.VarName, data.Semantics );
+						m_currentDataCollector.AddToInterpolators( interpolator );
+					}
+					return data;
+				}
+			}
+
+			UIUtils.ShowMessage( "Maximum amount of interpolators exceeded", MessageSeverity.Error );
 			return null;
 		}
 
@@ -677,7 +734,7 @@ namespace AmplifyShaderEditor
 			return resetInstrucctions;
 		}
 
-		bool GetCustomInterpolatedData( TemplateInfoOnSematics info, WirePortDataType type, PrecisionType precisionType, ref string result, bool useMasterNodeCategory, MasterNodePortCategory customCategory )
+		public bool GetCustomInterpolatedData( TemplateInfoOnSematics info, WirePortDataType type, PrecisionType precisionType, ref string result, bool useMasterNodeCategory, MasterNodePortCategory customCategory )
 		{
 			MasterNodePortCategory category = useMasterNodeCategory ? m_currentDataCollector.PortCategory : customCategory;
 			if( category == MasterNodePortCategory.Vertex )
@@ -726,13 +783,13 @@ namespace AmplifyShaderEditor
 			}
 			return false;
 		}
-
+		
 		public string GetVertexPosition( WirePortDataType type, PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
 		{
 			if( HasInfo( TemplateInfoOnSematics.POSITION, useMasterNodeCategory, customCategory ) )
 			{
 				InterpDataHelper info = GetInfo( TemplateInfoOnSematics.POSITION, useMasterNodeCategory, customCategory );
-				if( type != info.VarType )
+				if( type != WirePortDataType.OBJECT && type != info.VarType )
 					return TemplateHelperFunctions.AutoSwizzleData( info.VarName, info.VarType, type );
 				else
 					return info.VarName;
@@ -742,10 +799,27 @@ namespace AmplifyShaderEditor
 				MasterNodePortCategory portCategory = useMasterNodeCategory ? m_currentDataCollector.PortCategory : customCategory;
 				string name = "ase_vertex_pos";
 				string varName = RegisterInfoOnSemantic( portCategory, TemplateInfoOnSematics.POSITION, TemplateSemantics.POSITION, name, WirePortDataType.FLOAT4, precisionType, true );
-				if( type != WirePortDataType.FLOAT4 )
+				if( type != WirePortDataType.OBJECT && type != WirePortDataType.FLOAT4 )
 					return TemplateHelperFunctions.AutoSwizzleData( varName, WirePortDataType.FLOAT4, type );
 				else
 					return varName;
+			}
+		}
+
+		private const string InstancingLibStandard = "UnityInstancing.cginc";
+		private const string InstancingLibSRP = "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl";
+
+		public void SetupInstancing()
+		{
+			if( !HasInfo( TemplateInfoOnSematics.INSTANCE_ID ) )
+			{
+				m_currentDataCollector.AddToPragmas( -1, IOUtils.InstancedPropertiesHeader );
+				m_currentDataCollector.AddToIncludes( -1, IsSRP ? InstancingLibSRP : InstancingLibStandard );
+				m_currentDataCollector.AddToVertexInput( Constants.InstanceIdMacro );
+				m_currentDataCollector.AddToInterpolators( Constants.InstanceIdMacro );
+				m_currentDataCollector.AddToLocalVariables( MasterNodePortCategory.Vertex, -1, string.Format( "UNITY_SETUP_INSTANCE_ID({0});", m_currentTemplateData.VertexFunctionData.InVarName ) );
+				m_currentDataCollector.AddToLocalVariables( MasterNodePortCategory.Vertex, -1, string.Format( "UNITY_TRANSFER_INSTANCE_ID({0}, {1});", m_currentTemplateData.VertexFunctionData.InVarName, m_currentTemplateData.VertexFunctionData.OutVarName ) );
+				m_currentDataCollector.AddToLocalVariables( MasterNodePortCategory.Fragment, -1, string.Format( "UNITY_SETUP_INSTANCE_ID({0});", m_currentTemplateData.FragmentFunctionData.InVarName ) );
 			}
 		}
 
@@ -777,7 +851,7 @@ namespace AmplifyShaderEditor
 			}
 		}
 
-		public string GetWorldNormal( PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment, bool normalize = false )
+		public string GetWorldNormal( PrecisionType precisionType = PrecisionType.Float, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment, bool normalize = false )
 		{
 			string result = string.Empty;
 			if( GetCustomInterpolatedData( TemplateInfoOnSematics.WORLD_NORMAL, WirePortDataType.FLOAT3, precisionType, ref result, useMasterNodeCategory, customCategory ) )
@@ -819,18 +893,25 @@ namespace AmplifyShaderEditor
 			return string.Format( "float3(dot({1},{0}), dot({2},{0}), dot({3},{0}))", tanNormal, tanToWorld0, tanToWorld1, tanToWorld2 );
 		}
 
-		public string GetVertexTangent( PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
+		public string GetVertexTangent( WirePortDataType type, PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
 		{
 			if( HasInfo( TemplateInfoOnSematics.TANGENT, useMasterNodeCategory, customCategory ) )
 			{
 				InterpDataHelper info = GetInfo( TemplateInfoOnSematics.TANGENT, useMasterNodeCategory, customCategory );
-				return info.VarName;
+				if( type != WirePortDataType.OBJECT && type != info.VarType )
+					return TemplateHelperFunctions.AutoSwizzleData( info.VarName, info.VarType, type );
+				else
+					return info.VarName;
 			}
 			else
 			{
 				MasterNodePortCategory category = useMasterNodeCategory ? m_currentDataCollector.PortCategory : customCategory;
 				string name = "ase_tangent";
-				return RegisterInfoOnSemantic( category, TemplateInfoOnSematics.TANGENT, TemplateSemantics.TANGENT, name, WirePortDataType.FLOAT4, precisionType, false );
+				string varName =  RegisterInfoOnSemantic( category, TemplateInfoOnSematics.TANGENT, TemplateSemantics.TANGENT, name, WirePortDataType.FLOAT4, precisionType, false );
+				if( type != WirePortDataType.OBJECT && type != WirePortDataType.FLOAT4 )
+					return TemplateHelperFunctions.AutoSwizzleData( varName, WirePortDataType.FLOAT4, type );
+				else
+					return varName;
 			}
 		}
 
@@ -840,11 +921,11 @@ namespace AmplifyShaderEditor
 			if( HasCustomInterpolatedData( varName, useMasterNodeCategory, customCategory ) )
 				return varName;
 
-			string tangentValue = GetVertexTangent( precisionType, false, MasterNodePortCategory.Vertex );
+			string tangentValue = GetVertexTangent( WirePortDataType.FLOAT3, precisionType, false, MasterNodePortCategory.Vertex );
 			string normalValue = GetVertexNormal( precisionType, false, MasterNodePortCategory.Vertex );
 
 			string bitangentValue = string.Format( "cross({0},{1})", normalValue, tangentValue );
-			RegisterCustomInterpolatedData( varName, WirePortDataType.FLOAT, PrecisionType.Float, bitangentValue, useMasterNodeCategory, customCategory );
+			RegisterCustomInterpolatedData( varName, WirePortDataType.FLOAT3, PrecisionType.Float, bitangentValue, useMasterNodeCategory, customCategory );
 			return varName;
 		}
 
@@ -860,7 +941,7 @@ namespace AmplifyShaderEditor
 			if( HasCustomInterpolatedData( varName, useMasterNodeCategory, customCategory ) )
 				return varName;
 
-			string vertexTangent = GetVertexTangent( precisionType, false, MasterNodePortCategory.Vertex );
+			string vertexTangent = GetVertexTangent(  WirePortDataType.FLOAT4, precisionType, false, MasterNodePortCategory.Vertex );
 			string formatStr = string.Empty;
 
 			if( IsSRP )
@@ -879,7 +960,7 @@ namespace AmplifyShaderEditor
 			if( HasCustomInterpolatedData( varName, useMasterNodeCategory, customCategory ) )
 				return varName;
 
-			string tangentValue = GetVertexTangent( precisionType, false, MasterNodePortCategory.Vertex );
+			string tangentValue = GetVertexTangent( WirePortDataType.FLOAT4, precisionType, false, MasterNodePortCategory.Vertex );
 			string tangentSignValue = string.Format( "{0}.w * unity_WorldTransformParams.w", tangentValue );
 			RegisterCustomInterpolatedData( varName, WirePortDataType.FLOAT, PrecisionType.Float, tangentSignValue, useMasterNodeCategory, customCategory );
 			return varName;
@@ -982,7 +1063,7 @@ namespace AmplifyShaderEditor
 		{
 			string value = string.Empty;
 
-			if( m_currentSRPType == TemplateSRPType.HD )
+			if( m_currentSRPType != TemplateSRPType.BuiltIn )
 			{
 				value = "float3( length( GetObjectToWorldMatrix()[ 0 ].xyz ), length( GetObjectToWorldMatrix()[ 1 ].xyz ), length( GetObjectToWorldMatrix()[ 2 ].xyz ) )";
 			}
@@ -1032,6 +1113,10 @@ namespace AmplifyShaderEditor
 #else
 				worldPosConversion = string.Format( "GetAbsolutePositionWS( mul( GetObjectToWorldMatrix(), {0}).xyz )", vertexPos );
 #endif
+			}
+			else if( m_currentSRPType == TemplateSRPType.Lightweight )
+			{
+				worldPosConversion = string.Format( "mul(GetObjectToWorldMatrix(), {0}).xyz", vertexPos );
 			}
 			else
 			{
@@ -1129,6 +1214,12 @@ namespace AmplifyShaderEditor
 
 		public string GetScreenPos( bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
 		{
+			string result = string.Empty;
+			if( GetCustomInterpolatedData( TemplateInfoOnSematics.SCREEN_POSITION, WirePortDataType.FLOAT4, PrecisionType.Float, ref result, useMasterNodeCategory, customCategory ) )
+			{
+				return result;
+			}
+
 			string varName = UIUtils.GetInputValueFromType( SurfaceInputs.SCREEN_POS );
 			if( HasCustomInterpolatedData( varName, useMasterNodeCategory, customCategory ) )
 				return varName;
@@ -1149,9 +1240,15 @@ namespace AmplifyShaderEditor
 
 		public string GetScreenPosNormalized( bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
 		{
+			string result = string.Empty;
+			if( GetCustomInterpolatedData( TemplateInfoOnSematics.SCREEN_POSITION_NORMALIZED, WirePortDataType.FLOAT4, PrecisionType.Float, ref result, useMasterNodeCategory, customCategory ) )
+			{
+				return result;
+			}
+
 			string varName = GeneratorUtils.ScreenPositionNormalizedStr;// "norm" + UIUtils.GetInputValueFromType( SurfaceInputs.SCREEN_POS );
 			string screenPos = GetScreenPos( useMasterNodeCategory, customCategory );
-			string normalizedValue = string.Format( "float4 {0} = {1}/{1}.w;", varName, screenPos );
+			string normalizedValue = string.Format( GeneratorUtils.NormalizedScreenPosFormat, varName, screenPos );
 			string clipPlaneTestOp = string.Format( "{0}.z = ( UNITY_NEAR_CLIP_VALUE >= 0 ) ? {0}.z : {0}.z * 0.5 + 0.5;", varName );
 			m_currentDataCollector.AddLocalVariable( -1, normalizedValue );
 			m_currentDataCollector.AddLocalVariable( -1, clipPlaneTestOp );
@@ -1275,7 +1372,7 @@ namespace AmplifyShaderEditor
 			return GeneratorUtils.TangentToWorldFastStr;
 		}
 
-		public string GetTangentToWorldMatrixPrecise( PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment)
+		public string GetTangentToWorldMatrixPrecise( PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
 		{
 			string worldToTangent = GetWorldToTangentMatrix( precisionType, useMasterNodeCategory, customCategory );
 			GeneratorUtils.Add3x3InverseFunction( ref m_currentDataCollector, UIUtils.PrecisionWirePortToCgType( precisionType, WirePortDataType.FLOAT ) );
@@ -1359,7 +1456,7 @@ namespace AmplifyShaderEditor
 				objectSpaceLightDir = string.Format( "mul( GetWorldToObjectMatrix(), {0} ).xyz", worldSpaceLightDir );
 				break;
 				case TemplateSRPType.Lightweight:
-				objectSpaceLightDir = "mul( unity_WorldToObject, _MainLightPosition ).xyz";
+				objectSpaceLightDir = "mul( GetWorldToObjectMatrix(), _MainLightPosition ).xyz";
 				break;
 			}
 
@@ -1373,6 +1470,7 @@ namespace AmplifyShaderEditor
 			{
 				m_currentDataCollector.AddToIncludes( -1, Constants.UnityLightingLib );
 				m_currentDataCollector.AddToIncludes( -1, Constants.UnityAutoLightLib );
+				AddLateDirective( AdditionalLineType.Custom, "//This is a late directive" );
 			}
 			else
 			{
@@ -1381,7 +1479,7 @@ namespace AmplifyShaderEditor
 				if( m_currentSRPType == TemplateSRPType.HD )
 				{
 					AddHDLightInfo();
-					lightVar = string.Format( TemplateHelperFunctions.HDLightInfoFormat, "0", "forward" );
+					lightVar = "-" + string.Format( TemplateHelperFunctions.HDLightInfoFormat, "0", "forward" );
 				}
 				else
 				{
@@ -1444,7 +1542,7 @@ namespace AmplifyShaderEditor
 					}
 
 					m_currentDataCollector.AddToVertexLocalVariables( -1, m_currentTemplateData.VertexFunctionData.OutVarName + "." + interpData.VarNameWithSwizzle, name );
-					m_currentDataCollector.AddToLocalVariables( -1, precision, dataType, name, m_currentTemplateData.FragFunctionData.InVarName + "." + interpData.VarNameWithSwizzle );
+					m_currentDataCollector.AddToLocalVariables( -1, precision, dataType, name, m_currentTemplateData.FragmentFunctionData.InVarName + "." + interpData.VarNameWithSwizzle );
 				}
 			}
 		}
@@ -1600,6 +1698,26 @@ namespace AmplifyShaderEditor
 			{
 				m_specialFragmentLocalVars.Clear();
 				m_specialFragmentLocalVars = null;
+			}
+		}
+
+		public const string GlobalMaxInterpolatorReachedMsg = "Maximum amount of interpolators reached!\nPlease consider optmizing your shader!";
+		public const string MaxInterpolatorSMReachedMsg = "Maximum amount of interpolators reached for current shader model on pass {0}! Please consider increasing the shader model to {1}!";
+		public void CheckInterpolatorOverflow( string currShaderModel, string passName )
+		{
+			int maxInterpolatorAmount = TemplateHelperFunctions.AvailableInterpolators[ currShaderModel ];
+			int currInterpolatorAmount = 1 + TemplateHelperFunctions.SemanticToInt[ InterpData.AvailableInterpolators[ InterpData.AvailableInterpolators.Count - 1 ].Semantic ];
+			if( currInterpolatorAmount > maxInterpolatorAmount )
+			{
+				string shaderModel = string.Empty;
+				if( TemplateHelperFunctions.GetShaderModelForInterpolatorAmount( currInterpolatorAmount, ref shaderModel ) )
+				{
+					UIUtils.ShowMessage( string.Format( MaxInterpolatorSMReachedMsg, passName, shaderModel ), MessageSeverity.Error );
+				}
+				else
+				{
+					UIUtils.ShowMessage( GlobalMaxInterpolatorReachedMsg, MessageSeverity.Error );
+				}
 			}
 		}
 

@@ -7,12 +7,12 @@ Shader /*ase_name*/ "ASESampleTemplates/DoublePassUnlit" /*end*/
 	
 	SubShader
 	{
-		LOD 100
+		Tags { "RenderType" = "Opaque" }
 		/*ase_pass*/
 		Pass
 		{
+			Tags { }
 			Name "First"
-			Tags { "RenderType"="Opaque" }
 			/*ase_all_modules*/
 			CGPROGRAM
 			#pragma vertex vert
@@ -63,7 +63,7 @@ Shader /*ase_name*/ "ASESampleTemplates/DoublePassUnlit" /*end*/
 		Pass
 		{
 			Name "Second"
-			Tags { "RenderType"="Opaque" }
+			Tags { }
 			/*ase_all_modules*/
 			CGPROGRAM
 			#pragma vertex vert

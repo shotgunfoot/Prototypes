@@ -1,0 +1,1 @@
+Things that the player will interact with but not pick up in the world. I.e computers, PDAs, Buttons and so on.

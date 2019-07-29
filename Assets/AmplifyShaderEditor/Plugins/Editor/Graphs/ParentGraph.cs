@@ -20,6 +20,7 @@ namespace AmplifyShaderEditor
 			LOD4,
 			LOD5
 		}
+		private static bool m_samplingThroughMacros = false;
 
 		private NodeLOD m_lodLevel = NodeLOD.LOD0;
 		private GUIStyle nodeStyleOff;
@@ -102,6 +103,8 @@ namespace AmplifyShaderEditor
 		[SerializeField]
 		private UsageListCustomExpressionsOnFunctionMode m_customExpressionsOnFunctionMode = new UsageListCustomExpressionsOnFunctionMode();
 
+		[SerializeField]
+		private UsageListStaticSwitchNodes m_staticSwitchNodes = new UsageListStaticSwitchNodes();
 
 		[SerializeField]
 		private int m_masterNodeId = Constants.INVALID_NODE_ID;
@@ -211,6 +214,8 @@ namespace AmplifyShaderEditor
 			m_rawPropertyNodes.ContainerGraph = this;
 			m_customExpressionsOnFunctionMode = new UsageListCustomExpressionsOnFunctionMode();
 			m_customExpressionsOnFunctionMode.ContainerGraph = this;
+			m_staticSwitchNodes = new UsageListStaticSwitchNodes();
+			m_staticSwitchNodes.ContainerGraph = this;
 			m_screenColorNodes = new UsageListScreenColorNodes();
 			m_screenColorNodes.ContainerGraph = this;
 			m_localVarNodes = new UsageListRegisterLocalVarNodes();
@@ -267,6 +272,7 @@ namespace AmplifyShaderEditor
 			m_propertyNodes.UpdateNodeArr();
 			m_rawPropertyNodes.UpdateNodeArr();
 			m_customExpressionsOnFunctionMode.UpdateNodeArr();
+			m_staticSwitchNodes.UpdateNodeArr();
 			m_functionInputNodes.UpdateNodeArr();
 			m_functionNodes.UpdateNodeArr();
 			m_functionOutputNodes.UpdateNodeArr();
@@ -369,6 +375,7 @@ namespace AmplifyShaderEditor
 			m_propertyNodes.Clear();
 			m_rawPropertyNodes.Clear();
 			m_customExpressionsOnFunctionMode.Clear();
+			m_staticSwitchNodes.Clear();
 			m_functionInputNodes.Clear();
 			m_functionNodes.Clear();
 			m_functionOutputNodes.Clear();
@@ -578,6 +585,8 @@ namespace AmplifyShaderEditor
 
 			m_customExpressionsOnFunctionMode.Clear();
 
+			m_staticSwitchNodes.Clear();
+
 			m_functionInputNodes.Clear();
 			//m_functionInputNodes = null;
 
@@ -676,6 +685,9 @@ namespace AmplifyShaderEditor
 
 			m_customExpressionsOnFunctionMode.Destroy();
 			m_customExpressionsOnFunctionMode = null;
+
+			m_staticSwitchNodes.Destroy();
+			m_staticSwitchNodes = null;
 
 			m_functionInputNodes.Destroy();
 			m_functionInputNodes = null;
@@ -1236,7 +1248,7 @@ namespace AmplifyShaderEditor
 				if( CurrentCanvasMode == NodeAvailability.TemplateShader )
 				{
 					RefreshLinkedMasterNodes();
-					CurrentMasterNode.OnRefreshLinkedPortsComplete();
+					OnRefreshLinkedPortsComplete();
 					//RepositionTemplateNodes( CurrentMasterNode );
 				}
 			}
@@ -2165,7 +2177,6 @@ namespace AmplifyShaderEditor
 			ParentWindow.ForceRepaint();
 		}
 
-
 		public void DeleteMarkedForDeletionNodes()
 		{
 			UndoableDeleteSelectedNodes( m_markedForDeletion );
@@ -2311,6 +2322,13 @@ namespace AmplifyShaderEditor
 			//}
 			else
 			{
+				TemplateMultiPassMasterNode templateMasterNode = node as TemplateMultiPassMasterNode;
+				if( templateMasterNode != null && templateMasterNode.InvalidNode )
+				{
+					DestroyNode( node, false, true );
+					return;
+				}
+
 				DeselectNode( node );
 				UIUtils.ShowMessage( "Attempting to destroy a master node" );
 			}
@@ -2982,7 +3000,14 @@ namespace AmplifyShaderEditor
 				newMasterNode.IsMainOutputNode = true;
 			}
 		}
-
+		public void OnRefreshLinkedPortsComplete()
+		{
+			int mpCount = m_multiPassMasterNodes.Count;
+			for( int i = 0; i < mpCount; i++ )
+			{
+				m_multiPassMasterNodes.NodesList[ i ].OnRefreshLinkedPortsComplete();
+			}
+		}
 		public void RefreshLinkedMasterNodes()
 		{
 			if( DebugConsoleWindow.DeveloperMode )
@@ -3022,6 +3047,7 @@ namespace AmplifyShaderEditor
 			m_multiPassMasterNodes.NodesList.Sort( ( x, y ) => ( x.SubShaderIdx * 1000 + x.PassIdx ).CompareTo( y.SubShaderIdx * 1000 + y.PassIdx ) );
 			m_multiPassMasterNodes.UpdateNodeArr();
 
+			m_parentWindow.TemplatesManagerInstance.ResetOptionsSetupData();
 			for( int i = 0; i < mpCount; i++ )
 			{
 				int visiblePorts = 0;
@@ -3040,10 +3066,10 @@ namespace AmplifyShaderEditor
 				}
 
 				m_multiPassMasterNodes.NodesList[ i ].Docking = visiblePorts <= 0;
+				if( !m_isLoading )
+					m_multiPassMasterNodes.NodesList[ i ].ForceOptionsRefresh();
 			}
-
 		}
-
 
 		void CheckLinkedPorts( ref Dictionary<string, List<InputPort>> registeredLinks, TemplateMultiPassMasterNode masterNode )
 		{
@@ -3083,6 +3109,7 @@ namespace AmplifyShaderEditor
 					masterNode.InputPorts[ i ].Visible = true;
 				}
 			}
+			
 		}
 
 		public MasterNode ReplaceMasterNode( AvailableShaderTypes newType, bool writeDefaultData = false, TemplateDataParent templateData = null )
@@ -3183,7 +3210,7 @@ namespace AmplifyShaderEditor
 			newMasterNode.OnMaterialUpdatedEvent += OnMaterialUpdatedEvent;
 			newMasterNode.OnShaderUpdatedEvent += OnShaderUpdatedEvent;
 			newMasterNode.IsMainOutputNode = true;
-			CurrentMasterNode.OnRefreshLinkedPortsComplete();
+			OnRefreshLinkedPortsComplete();
 			FullCleanUndoStack();
 			return newMasterNode;
 		}
@@ -3317,7 +3344,7 @@ namespace AmplifyShaderEditor
 					}
 				}
 				RefreshLinkedMasterNodes();
-				CurrentMasterNode.OnRefreshLinkedPortsComplete();
+				OnRefreshLinkedPortsComplete();
 			}
 
 			LoadedShaderVersion = VersionInfo.FullNumber;
@@ -3440,10 +3467,32 @@ namespace AmplifyShaderEditor
 			}
 		}
 
+		public void MarkToDelete( ParentNode node )
+		{
+			m_markedForDeletion.Add( node );
+		}
 		public bool IsMasterNode( ParentNode node )
 		{
 			return ( node.UniqueId == m_masterNodeId ) ||
 					m_multiPassMasterNodes.HasNode( node.UniqueId );
+		}
+
+		public TemplateMultiPassMasterNode GetMasterNodeOfPass( string passName )
+		{
+			return m_multiPassMasterNodes.NodesList.Find( x => x.PassName.Equals( passName ) );
+		}
+
+		public void ForceMultiPassMasterNodesRefresh()
+		{
+			int mainOutputId = 0;
+			int count = m_multiPassMasterNodes.Count;
+			for( int i = 0; i < count; i++ )
+			{
+				m_multiPassMasterNodes.NodesList[ i ].ForceTemplateRefresh();
+				if( m_multiPassMasterNodes.NodesList[ i ].IsMainOutputNode )
+					mainOutputId = i;
+			}
+			m_multiPassMasterNodes.NodesList[ mainOutputId ].CheckTemplateChanges();
 		}
 
 		public bool IsNormalDependent { get { return m_normalDependentCount > 0; } }
@@ -3528,6 +3577,7 @@ namespace AmplifyShaderEditor
 		public UsageListPropertyNodes PropertyNodes { get { return m_propertyNodes; } }
 		public UsageListPropertyNodes RawPropertyNodes { get { return m_rawPropertyNodes; } }
 		public UsageListCustomExpressionsOnFunctionMode CustomExpressionOnFunctionMode { get { return m_customExpressionsOnFunctionMode; } }
+		public UsageListStaticSwitchNodes StaticSwitchNodes { get { return m_staticSwitchNodes; } }
 		public UsageListScreenColorNodes ScreenColorNodes { get { return m_screenColorNodes; } }
 		public UsageListRegisterLocalVarNodes LocalVarNodes { get { return m_localVarNodes; } }
 		public UsageListGlobalArrayNodes GlobalArrayNodes { get { return m_globalArrayNodes; } }
@@ -3587,5 +3637,6 @@ namespace AmplifyShaderEditor
 		public bool IsHDRP { get { return m_currentSRPType == TemplateSRPType.HD; } }
 		public bool IsLWRP { get { return m_currentSRPType == TemplateSRPType.Lightweight; } }
 		public bool IsStandardSurface { get { return GetNode( m_masterNodeId ) is StandardSurfaceOutputNode; } }
+		public bool SamplingThroughMacros { get { return m_samplingThroughMacros; } }
 	}
 }

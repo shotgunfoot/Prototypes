@@ -124,11 +124,13 @@ public class MouseLook : MonoBehaviour
     {
         Sensitivity = storedSensitivity;
         lookingEnabled = true;
+        LockMouse();
     }
 
     public void DisableMouseMovement()
     {
         Sensitivity = Vector2.zero;
         lookingEnabled = false;
+        ReleaseMouse();
     }
 }
