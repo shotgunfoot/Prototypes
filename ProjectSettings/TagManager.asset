@@ -12,6 +12,7 @@ TagManager:
   - HookTarget
   - WorldButton
   - PlayerWeapon
+  - Oxygen
   layers:
   - Default
   - TransparentFX

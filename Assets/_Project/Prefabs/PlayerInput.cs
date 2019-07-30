@@ -7,6 +7,7 @@ public class PlayerInput : MonoBehaviour
     public bool Jump { get; private set; }
     public bool Crouch { get; private set; }
     public bool Run { get; private set; }
+    public bool Watch { get; private set; }
 
     // Update is called once per frame
     void Update()
@@ -15,5 +16,6 @@ public class PlayerInput : MonoBehaviour
         Crouch = Input.GetButtonDown("Crouch");
         Jump = Input.GetButtonDown("Jump");
         Run = Input.GetButton("Run");
+        Watch = Input.GetButtonDown("Watch");
     }
 }

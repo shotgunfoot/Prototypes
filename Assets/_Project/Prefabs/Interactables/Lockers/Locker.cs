@@ -8,7 +8,7 @@ public class Locker : MonoBehaviour
     private bool open = false;
     private void Start()
     {
-        anim = GetComponent<Animator>();
+        anim = GetComponent<Animator>();        
     }
 
     public void OpenOrClose()
